@@ -5,12 +5,13 @@ import Animated, {
   Easing, withSpring,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle } from 'react-native-svg';
+import { Star } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { SectionHeader } from './SectionHeader';
 import {
   PURPLE_PRIMARY, PURPLE_SOFT, BLUE_PRIMARY,
-  LIVE_RED, GOLD_PRIMARY, TEXT_PRIMARY, TEXT_MUTED,
-  BG_SURFACE,
+  LIVE_RED,   GOLD_PRIMARY, TEXT_PRIMARY, TEXT_MUTED,
+  SCREEN_PADDING_H,
 } from '../../../constants/tokens';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -127,7 +128,15 @@ function TeamAvatar({ name }: { name: string }) {
 }
 
 // ─── Match Card ───────────────────────────────────────────────────────────────
-function MatchCard({ match, index }: { match: Match; index: number }) {
+function MatchCard({
+  match,
+  index,
+  onOpenHub,
+}: {
+  match: Match;
+  index: number;
+  onOpenHub: () => void;
+}) {
   const [starred, setStarred] = useState(false);
   const { homeTeam, awayTeam, status, minute, stoppageTime, league, kickoff } = match;
   const isLive     = status === 'LIVE' || status === '1ST' || status === '2ND' || status === 'HT';
@@ -136,7 +145,13 @@ function MatchCard({ match, index }: { match: Match; index: number }) {
 
   return (
     <Animated.View entering={FadeInDown.delay(index * 80).springify().damping(14)}>
-      <View style={[styles.card, isLive && styles.cardLive, isStoppage && styles.cardStoppage]}>
+      <TouchableOpacity
+        activeOpacity={0.92}
+        onPress={onOpenHub}
+        accessibilityRole="button"
+        accessibilityLabel={`Open match hub: ${homeTeam.shortName} vs ${awayTeam.shortName}`}
+        style={[styles.card, isLive && styles.cardLive, isStoppage && styles.cardStoppage]}
+      >
 
         {/* Left accent bar — gradient purple→blue for live */}
         {isLive ? (
@@ -211,16 +226,24 @@ function MatchCard({ match, index }: { match: Match; index: number }) {
           </View>
         </View>
 
-        {/* Bottom row */}
+        {/* Bottom row — watchlist only */}
         <View style={styles.cardBottom}>
-          <Text style={styles.leagueSmall}>{league}</Text>
-          <TouchableOpacity onPress={() => setStarred(s => !s)} activeOpacity={0.7}>
-            <Text style={{ fontSize: 16, color: starred ? GOLD_PRIMARY : 'rgba(255,255,255,0.3)' }}>
-              {starred ? '★' : '☆'}
-            </Text>
+          <TouchableOpacity
+            onPress={() => setStarred(s => !s)}
+            activeOpacity={0.7}
+            hitSlop={12}
+            style={styles.watchlistBtn}
+            accessibilityLabel={starred ? 'Remove from watchlist' : 'Add to watchlist'}
+          >
+            <Star
+              size={17}
+              color={starred ? GOLD_PRIMARY : 'rgba(255,255,255,0.28)'}
+              fill={starred ? GOLD_PRIMARY : 'transparent'}
+              strokeWidth={starred ? 0 : 2}
+            />
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
@@ -234,12 +257,12 @@ function EmptyMatchCard() {
       <View style={styles.emptyRingOuter} />
       <View style={styles.emptyRingMiddle} />
       <View style={styles.emptyRingInner}>
-        <Text style={styles.emptyCardEmoji}>⚽</Text>
+        <Text style={styles.emptyCardDash}>—</Text>
       </View>
-      <Text style={styles.emptyCardTitle}>لا توجد مباريات الآن</Text>
-      <Text style={styles.emptyCardSub}>اسحب للأسفل للتحديث</Text>
+      <Text style={styles.emptyCardTitle}>No matches right now</Text>
+      <Text style={styles.emptyCardSub}>Pull down to refresh</Text>
       <View style={styles.emptyChip}>
-        <Text style={styles.emptyChipText}>🔄 تحديث</Text>
+        <Text style={styles.emptyChipText}>Swipe for more fixtures</Text>
       </View>
     </View>
   );
@@ -254,14 +277,14 @@ function EmptySection() {
         <View style={styles.emptySectionRing2} />
         <View style={styles.emptySectionRing1} />
         <View style={styles.emptySectionIconBox}>
-          <Text style={styles.emptySectionEmoji}>📅</Text>
+          <Text style={styles.emptySectionGlyph}>Cal</Text>
         </View>
       </View>
-      <Text style={styles.emptySectionTitle}>لا توجد مباريات</Text>
-      <Text style={styles.emptySectionSub}>لا توجد مباريات مجدولة الآن{'\n'}اسحب للأسفل للتحديث</Text>
+      <Text style={styles.emptySectionTitle}>No matches</Text>
+      <Text style={styles.emptySectionSub}>Nothing scheduled{'\n'}Pull down to refresh</Text>
       <View style={styles.emptySectionDivider} />
       <View style={styles.emptySectionChip}>
-        <Text style={styles.emptySectionChipText}>↓  اسحب للتحديث</Text>
+        <Text style={styles.emptySectionChipText}>Pull to refresh</Text>
       </View>
     </View>
   );
@@ -273,12 +296,19 @@ interface MatchListProps {
 }
 
 export function MatchList({ isLoading = false }: MatchListProps) {
+  const router = useRouter();
   const hasMatches = matches.length > 0;
   const shimmerX = useShimmer();
+  const openMatchesHub = () => router.push('/matches');
 
   return (
     <View style={styles.section}>
-      <SectionHeader title="Important Matches" action="View All" />
+      <SectionHeader
+        subtitle="Live & fixtures"
+        title="Important matches"
+        action="View all"
+        onAction={openMatchesHub}
+      />
       {isLoading ? (
         <ScrollView
           horizontal
@@ -299,7 +329,9 @@ export function MatchList({ isLoading = false }: MatchListProps) {
           snapToAlignment="start"
           removeClippedSubviews
         >
-          {matches.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)}
+          {matches.map((m, i) => (
+            <MatchCard key={m.id} match={m} index={i} onOpenHub={openMatchesHub} />
+          ))}
           <EmptyMatchCard />
         </ScrollView>
       ) : (
@@ -311,8 +343,8 @@ export function MatchList({ isLoading = false }: MatchListProps) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  section: { marginBottom: 28 },
-  scrollContent: { paddingHorizontal: 16, paddingBottom: 4, gap: 12 },
+  section: { marginBottom: 0 },
+  scrollContent: { paddingHorizontal: SCREEN_PADDING_H, paddingBottom: 4, gap: 12 },
 
   // ── Skeleton ──────────────────────────────────────────────────────────────
   skeletonCard: {
@@ -417,11 +449,18 @@ const styles = StyleSheet.create({
 
   // ── Bottom Row ────────────────────────────────────────────────────────────
   cardBottom: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 14, paddingTop: 8, paddingBottom: 10,
-    borderTopWidth: 0.5, borderTopColor: 'rgba(255,255,255,0.05)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 14,
+    paddingTop: 8,
+    paddingBottom: 10,
+    borderTopWidth: 0.5,
+    borderTopColor: 'rgba(255,255,255,0.05)',
   },
-  leagueSmall: { color: 'rgba(255,255,255,0.2)', fontSize: 11, fontWeight: '500' },
+  watchlistBtn: {
+    padding: 4,
+  },
 
   // ── Empty Match Card ──────────────────────────────────────────────────────
   emptyCard: {
@@ -455,7 +494,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(124,58,237,0.15)',
     alignItems: 'center', justifyContent: 'center',
   },
-  emptyCardEmoji: { fontSize: 20 },
+  emptyCardDash: { fontSize: 18, color: 'rgba(167,139,250,0.45)', fontWeight: '300' },
   emptyCardTitle: { color: 'rgba(167,139,250,0.7)', fontSize: 13, fontWeight: '700', letterSpacing: 0.2 },
   emptyCardSub: { color: 'rgba(255,255,255,0.2)', fontSize: 11 },
   emptyChip: {
@@ -468,7 +507,7 @@ const styles = StyleSheet.create({
 
   // ── Empty Section ─────────────────────────────────────────────────────────
   emptySection: {
-    marginHorizontal: 16, paddingVertical: 44, paddingHorizontal: 24,
+    marginHorizontal: SCREEN_PADDING_H, paddingVertical: 44, paddingHorizontal: 24,
     alignItems: 'center', borderRadius: 20,
     backgroundColor: 'rgba(10,7,18,0.95)',
     borderWidth: 0.5, borderColor: 'rgba(124,58,237,0.2)',
@@ -493,7 +532,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(124,58,237,0.3)',
     alignItems: 'center', justifyContent: 'center',
   },
-  emptySectionEmoji: { fontSize: 22, opacity: 0.7 },
+  emptySectionGlyph: { fontSize: 11, fontWeight: '800', color: 'rgba(167,139,250,0.55)', letterSpacing: 1.2 },
   emptySectionTitle: { color: 'rgba(167,139,250,0.8)', fontSize: 16, fontWeight: '700', letterSpacing: -0.2, marginTop: 2 },
   emptySectionSub: { color: 'rgba(255,255,255,0.25)', fontSize: 12, textAlign: 'center', lineHeight: 18 },
   emptySectionDivider: { width: 40, height: 0.5, backgroundColor: 'rgba(124,58,237,0.25)', marginVertical: 10 },

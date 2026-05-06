@@ -32,7 +32,6 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { Message } from '../../hooks/useAIChatNative';
 import {
   Colors,
@@ -40,7 +39,6 @@ import {
   FontSize,
   LineHeight,
   Spacing,
-  BlurIntensity,
   Gradients,
 } from '../../../constants/theme';
 import { MessageContextMenu } from '../chat/MessageContextMenu';
@@ -57,7 +55,7 @@ interface MessageBubbleProps {
 }
 
 // ─── Markdown Parser ──────────────────────────────────────────────────────────
-// الـ parser functions خارج الـ component عشان مش محتاجين re-creation
+// Markdown helpers live outside the component to avoid recreating closures each render.
 
 interface TableBlock {
   headers: string[];
@@ -268,7 +266,7 @@ const WaveDot = React.memo(function WaveDot({ delay }: { delay: number }) {
   const translateY = useSharedValue(0);
 
   useEffect(() => {
-    // ✅ الـ interval محتاج يتنضف صح — الـ cleanup كانت جوا callback مش بترجع
+    // Interval cleanup must live in effect teardown (not inside spring callback).
     let interval: ReturnType<typeof setInterval>;
 
     const doWave = () => {
@@ -302,11 +300,6 @@ export const TypingIndicator = React.memo(function TypingIndicator() {
   return (
     <Animated.View entering={FadeIn.duration(300)} style={styles.aiRow}>
       <View style={styles.typingBubbleWrapper}>
-        <BlurView
-          intensity={BlurIntensity.glass}
-          tint="dark"
-          style={StyleSheet.absoluteFill}
-        />
         <View style={styles.aiBubbleFallback} />
         <View style={styles.typingDots}>
           {([0, 150, 300] as const).map((delay, i) => (
@@ -324,7 +317,7 @@ export const AIMessageBubble = React.memo(function AIMessageBubble({
   message,
   index = 0,
 }: MessageBubbleProps) {
-  // ✅ نرجّع الـ ref لـ null لما message.id يتغير
+  // Reset cached stream when the message id changes.
   const initialTextRef  = useRef<string | null>(null);
   const prevMessageId   = useRef<string | null>(null);
 
@@ -410,16 +403,9 @@ export const AIMessageBubble = React.memo(function AIMessageBubble({
         <Pressable
           onPress={handleBubblePress}
           accessibilityRole="text"
-          accessibilityLabel={`رسالة الذكاء الاصطناعي: ${displayText}`}
+          accessibilityLabel={`AI message: ${displayText}`}
         >
           <View style={styles.aiBubbleWrapper}>
-            {/* Glass blur */}
-            <BlurView
-              intensity={BlurIntensity.glass}
-              tint="dark"
-              style={StyleSheet.absoluteFill}
-            />
-            {/* Fallback overlay */}
             <View style={styles.aiBubbleFallback} />
             {/* Gradient overlay */}
             <LinearGradient
@@ -538,7 +524,7 @@ export const UserMessageBubble = React.memo(function UserMessageBubble({
             onLongPress={handleLongPress}
             delayLongPress={450}
             accessibilityRole="text"
-            accessibilityLabel={`رسالتك: ${message.text}`}
+            accessibilityLabel={`Your message: ${message.text}`}
           >
             <LinearGradient
               colors={Gradients.userBubble}
@@ -557,7 +543,7 @@ export const UserMessageBubble = React.memo(function UserMessageBubble({
         </View>
       </Animated.View>
 
-      {/* ✅ Context menu يظهر بغض النظر عن وجود handlers */}
+      {/* Context menu mounts even when optional handlers are omitted */}
       {contextMenuVisible && (
         <MessageContextMenu
           messageText={message.text}
@@ -652,15 +638,14 @@ const styles = StyleSheet.create({
     fontSize: FontSize['md+'],
     color: Colors.white,
     lineHeight: LineHeight.relaxed,
-    writingDirection: 'rtl',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   userTimestamp: {
     fontSize: FontSize.xs,
     color: Colors.textMuted,
     marginTop: Spacing.xs / 2,
-    marginRight: Spacing.xs,
-    textAlign: 'right',
+    marginLeft: Spacing.xs,
+    textAlign: 'left',
   },
 
   // Typing indicator
@@ -696,8 +681,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize['md+'],
     color: Colors.textPrimary,
     lineHeight: LineHeight.relaxed,
-    writingDirection: 'rtl',
-    textAlign: 'right',
+    textAlign: 'left',
   },
 
   // Markdown: bold title
@@ -707,8 +691,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     marginTop: Spacing.sm,
     marginBottom: 2,
-    writingDirection: 'rtl',
-    textAlign: 'right',
+    textAlign: 'left',
   },
 
   // Markdown: bullet
@@ -727,8 +710,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize['md+'],
     color: Colors.white80,
     lineHeight: LineHeight.relaxed,
-    writingDirection: 'rtl',
-    textAlign: 'right',
+    textAlign: 'left',
   },
 
   // Markdown: spacer
@@ -743,8 +725,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     marginTop: Spacing.md,
     marginBottom: Spacing.sm,
-    writingDirection: 'rtl',
-    textAlign: 'right',
+    textAlign: 'left',
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.white10,
     paddingBottom: Spacing.xs,
@@ -755,8 +736,7 @@ const styles = StyleSheet.create({
     color: Colors.white90,
     marginTop: Spacing.md,
     marginBottom: Spacing.xs,
-    writingDirection: 'rtl',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   heading3: {
     fontSize: FontSize['2xl'],
@@ -764,8 +744,7 @@ const styles = StyleSheet.create({
     color: Colors.purpleSoft,
     marginTop: Spacing.sm,
     marginBottom: Spacing.xs,
-    writingDirection: 'rtl',
-    textAlign: 'right',
+    textAlign: 'left',
   },
 
   // Markdown: code block
@@ -855,13 +834,11 @@ const styles = StyleSheet.create({
     fontSize: FontSize.base,
     fontWeight: '600',
     color: Colors.white90,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    textAlign: 'left',
   },
   tableCellText: {
     fontSize: FontSize.base,
     color: Colors.white80,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    textAlign: 'left',
   },
 });

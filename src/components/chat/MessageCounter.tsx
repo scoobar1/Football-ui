@@ -76,7 +76,7 @@ export function MessageCounter({
   );
 
   // ✅ نص وصفي للـ accessibility
-  const accessibilityLabel = `متبقي ${messagesRemaining} من ${total} رسائل`;
+  const accessibilityLabel = `${messagesRemaining} of ${total} messages remaining`;
 
   return (
     /**

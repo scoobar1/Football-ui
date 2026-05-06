@@ -35,7 +35,7 @@ export function LimitReachedMessage({ resetTime }: LimitReachedMessageProps) {
 
         {/* Content */}
         <View style={styles.content}>
-          <Text style={styles.label}>انتهت رسائلك اليومية</Text>
+          <Text style={styles.label}>Daily message limit reached</Text>
 
           {/* Gradient countdown text */}
           <MaskedView
@@ -59,7 +59,7 @@ export function LimitReachedMessage({ resetTime }: LimitReachedMessageProps) {
             </LinearGradient>
           </MaskedView>
 
-          <Text style={styles.sublabel}>حتى إعادة التعيين</Text>
+          <Text style={styles.sublabel}>Resets after the countdown</Text>
         </View>
       </View>
     </Animated.View>
@@ -93,7 +93,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.md,
     color: Colors.white50,
     marginBottom: Spacing.md,
-    writingDirection: 'rtl',
   },
   countdownMask: {
     fontSize: FontSize['9xl'],
@@ -106,6 +105,5 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     color: Colors.textMuted,
     marginTop: Spacing.sm,
-    writingDirection: 'rtl',
   },
 });

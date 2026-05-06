@@ -72,7 +72,8 @@ export const Colors = {
 
   // Tab colors
   tabHome: '#f59e0b',
-  tabMatches: '#22c55e',
+  tabMatches: '#3B82F6',
+  tabQuiz: '#3B82F6',
   tabAI: '#a855f7',
   tabReels: '#ef4444',
   tabStats: '#ec4899',
@@ -329,7 +330,8 @@ export const Layout = {
   maxBubbleWidthAI: '85%' as const,
   maxBubbleWidthUser: '65%' as const,
   sidePanel: 320,
-  scrollButtonBottom: 120,
+  /** Above composer + tab bar */
+  scrollButtonBottom: 190,
 } as const;
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
@@ -357,12 +359,14 @@ export const Fonts = Platform.select({
 
 // ─── Quick Chips ──────────────────────────────────────────────────────────────
 
+/** Text-only quick prompts — no emoji */
 export const QUICK_CHIPS = [
-  { icon: '⚽', text: 'معلومات كرة القدم' },
-  { icon: '🌙', text: 'إحصائيات الدوريات' },
-  { icon: '✏️', text: 'خطة تمرين' },
-  { icon: '📅', text: 'نظام غذائي' },
-  { icon: '🎵', text: 'نصائح الاستشفاء' },
+  { text: 'Football facts' },
+  { text: 'League stats' },
+  { text: 'Training plan' },
+  { text: 'Nutrition tips' },
+  { text: 'Recovery tips' },
+  { text: 'Strength work' },
 ] as const;
 
 // ─── WebSocket Config (deprecated — using SSE now) ───────────────────────────

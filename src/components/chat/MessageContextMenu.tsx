@@ -207,7 +207,7 @@ export function MessageContextMenu({
         exiting={FadeOut.duration(200)}
         style={StyleSheet.absoluteFill}
       >
-        <TouchableWithoutFeedback onPress={onClose} accessibilityLabel="إغلاق القائمة">
+        <TouchableWithoutFeedback onPress={onClose} accessibilityLabel="Close menu">
           <View style={styles.backdrop}>
             <BlurView
               intensity={BlurIntensity.contextMenu}
@@ -265,7 +265,7 @@ export function MessageContextMenu({
           <View style={styles.menuContent}>
             {/* ── Message preview ── */}
             <View style={styles.previewContainer}>
-              <Text style={styles.previewLabel}>الرسالة</Text>
+              <Text style={styles.previewLabel}>Message</Text>
               <Text style={styles.previewText} numberOfLines={2}>
                 {messageText}
               </Text>
@@ -274,13 +274,13 @@ export function MessageContextMenu({
             <View style={styles.divider} />
 
             {/* ── Actions ── */}
-            <MenuItem icon={<CopyIcon />}   text="نسخ"          onPress={onCopy}   delay={80} />
-            <MenuItem icon={<ResendIcon />} text="إعادة إرسال"  onPress={onResend} delay={120} />
-            <MenuItem icon={<EditIcon />}   text="تعديل"         onPress={onEdit}   delay={160} />
+            <MenuItem icon={<CopyIcon />}   text="Copy"           onPress={onCopy}   delay={80} />
+            <MenuItem icon={<ResendIcon />} text="Resend"         onPress={onResend} delay={120} />
+            <MenuItem icon={<EditIcon />}   text="Edit"           onPress={onEdit}   delay={160} />
 
             <View style={styles.divider} />
 
-            <MenuItem icon={<DeleteIcon />} text="حذف"           onPress={onDelete} danger delay={200} />
+            <MenuItem icon={<DeleteIcon />} text="Delete"         onPress={onDelete} danger delay={200} />
           </View>
         </View>
       </Animated.View>
@@ -350,21 +350,19 @@ const styles = StyleSheet.create({
   previewLabel: {
     fontSize: FontSize.xs,
     color: Colors.white30,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    textAlign: 'left',
     letterSpacing: 0.5,
   },
   previewText: {
     fontSize: FontSize.md,
     color: Colors.white50,
-    textAlign: 'right',
+    textAlign: 'left',
     lineHeight: FontSize.md * 1.6,
-    writingDirection: 'rtl',
   },
 
   // ── Menu Item ──
   menuItem: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
     paddingHorizontal: Spacing.base,
@@ -385,8 +383,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize['2xl'],
     fontWeight: '500',
     color: Colors.white80,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    textAlign: 'left',
   },
   menuItemTextDanger: {
     color: Colors.error,

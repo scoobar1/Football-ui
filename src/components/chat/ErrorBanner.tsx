@@ -157,7 +157,7 @@ export const ErrorBanner = React.memo(({
             onPressOut={retryPress.onPressOut}
             onPress={handleRetry}
             accessibilityRole="button"
-            accessibilityLabel="إعادة المحاولة"
+            accessibilityLabel="Retry"
           >
             <LinearGradient
               colors={['#EF4444', '#DC2626']}
@@ -165,7 +165,7 @@ export const ErrorBanner = React.memo(({
               end={{ x: 1, y: 1 }}
               style={styles.retryGradient}
             >
-              <Text style={styles.retryText}>إعادة المحاولة</Text>
+              <Text style={styles.retryText}>Retry</Text>
             </LinearGradient>
           </AnimatedPressable>
 
@@ -175,7 +175,7 @@ export const ErrorBanner = React.memo(({
             onPressOut={dismissPress.onPressOut}
             onPress={handleDismiss}
             accessibilityRole="button"
-            accessibilityLabel="إغلاق رسالة الخطأ"
+            accessibilityLabel="Dismiss error"
           >
             <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
               <Line
@@ -242,8 +242,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.base,
     color: 'rgba(254,202,202,0.9)',
     lineHeight: 20,
-    writingDirection: 'rtl',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   actions: {
     flexDirection: 'row',
@@ -263,7 +262,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     fontWeight: '600',
     color: Colors.white,
-    writingDirection: 'rtl',
   },
   dismissButton: {
     width: 28,

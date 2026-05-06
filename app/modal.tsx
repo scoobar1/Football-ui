@@ -1,43 +1,52 @@
-// template
-import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   Modal,
   Platform,
   Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+} from 'react-native';
+import {
+  OVERLAY_SCRIM,
+  SURFACE_MODAL,
+  TEXT_PRIMARY,
+  TEXT_MUTED,
+  GRADIENT_CTA_PURPLE,
+  BORDER_ARENA,
+  RADIUS_LG,
+} from '../constants/tokens';
 
 export default function ModalScreen() {
   return (
     <Modal
       animationType="fade"
-      transparent={true}
-      visible={true}
+      transparent
+      visible
       onRequestClose={() => router.back()}
     >
       <Pressable style={styles.overlay} onPress={() => router.back()}>
-        <View style={styles.modalContent}>
+        <Pressable style={styles.sheet} onPress={() => {}}>
           <Text style={styles.title}>Modal</Text>
           <Text style={styles.description}>
-            This is an example modal with proper fade animation. You can edit it
-            in app/modal.tsx.
+            Example overlay aligned with the app shell — swap copy or actions when you wire flows.
           </Text>
 
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-        </View>
+          <Pressable onPress={() => router.back()} style={styles.ctaOuter}>
+            <LinearGradient
+              colors={[...GRADIENT_CTA_PURPLE]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.ctaInner}
+            >
+              <Text style={styles.ctaTxt}>Close</Text>
+            </LinearGradient>
+          </Pressable>
+        </Pressable>
       </Pressable>
 
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </Modal>
   );
 }
@@ -45,39 +54,47 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: OVERLAY_SCRIM,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-  modalContent: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 24,
-    margin: 20,
-    alignItems: "center",
-    minWidth: 300,
+  sheet: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: SURFACE_MODAL,
+    borderRadius: RADIUS_LG,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: BORDER_ARENA,
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontWeight: '800',
+    color: TEXT_PRIMARY,
+    letterSpacing: -0.35,
+    marginBottom: 10,
   },
   description: {
-    textAlign: "center",
-    marginBottom: 24,
-    color: "#666",
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 21,
+    color: TEXT_MUTED,
+    marginBottom: 22,
   },
-  closeButton: {
-    backgroundColor: "#007AFF",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 10,
-    minWidth: 100,
+  ctaOuter: {
+    alignSelf: 'stretch',
+    borderRadius: RADIUS_LG - 4,
+    overflow: 'hidden',
   },
-  closeButtonText: {
-    color: "white",
-    fontWeight: "600",
-    textAlign: "center",
+  ctaInner: {
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ctaTxt: {
+    color: TEXT_PRIMARY,
+    fontSize: 15,
+    fontWeight: '700',
   },
 });

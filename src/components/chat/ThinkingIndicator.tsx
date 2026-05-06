@@ -14,8 +14,8 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
 } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
-import { Colors, Radius, FontSize, Spacing, BlurIntensity, Duration } from '../../../constants/theme';
+import { Brain, CheckCircle, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { Colors, Radius, FontSize, Spacing, Duration } from '../../../constants/theme';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -31,45 +31,47 @@ interface ThinkingIndicatorProps {
 
 function generateThinkingSteps(message: string): string[] {
   if (!message) {
-    return ['جاري تحليل السؤال...', 'تجهيز الرد...'];
+    return ['Reading your question…', 'Drafting a reply…'];
   }
 
-  const clean = message.replace(/[؟?.,!]/g, '');
-  const words = clean.split(' ').filter(w => w.length > 2);
+  const clean = message.replace(/[?!.,]/g, '');
+  const words = clean.split(/\s+/).filter(w => w.length > 2);
 
   const keyword =
-    words.sort((a, b) => b.length - a.length)[0] || 'البيانات';
+    words.sort((a, b) => b.length - a.length)[0] || 'details';
 
-  // Smart steps based on intent
-  if (message.includes('كام') || message.includes('كم')) {
+  const lower = message.toLowerCase();
+
+  if (/\b(how many|count|number of|what'?s the score)\b/.test(lower)) {
     return [
-      'تحليل السؤال الرقمي...',
-      `البحث عن أرقام تخص "${keyword}"...`,
-      'حساب النتيجة...',
+      'Parsing the numbers…',
+      `Looking up “${keyword}”…`,
+      'Working through the math…',
     ];
   }
 
-  if (message.includes('ازاي') || message.includes('كيف')) {
+  if (/\b(how\b|why\b|what\b|explain|steps?|walk me through)\b/.test(lower) || message.includes('?')) {
     return [
-      'فهم المطلوب خطوة بخطوة...',
-      `تحليل "${keyword}"...`,
-      'تجهيز شرح واضح...',
+      'Breaking the question down…',
+      `Analyzing “${keyword}”…`,
+      'Drafting a clear answer…',
     ];
   }
 
   return [
-    'تحليل سؤال المستخدم...',
-    `البحث عن "${keyword}"...`,
-    'صياغة الإجابة...',
+    'Understanding your question…',
+    `Searching for “${keyword}”…`,
+    'Writing the response…',
   ];
 }
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 
-function BrainIcon({ status }: { status: Status }) {
-  if (status === 'done') return <Text style={{ fontSize: 16 }}>✅</Text>;
-  if (status === 'error') return <Text style={{ fontSize: 16 }}>⚠️</Text>;
-  return <Text style={{ fontSize: 16 }}>🧠</Text>;
+function StatusGlyph({ status }: { status: Status }) {
+  const size = 18;
+  if (status === 'done') return <CheckCircle size={size} color={Colors.success} strokeWidth={2.2} />;
+  if (status === 'error') return <AlertTriangle size={size} color={Colors.warning} strokeWidth={2.2} />;
+  return <Brain size={size} color={Colors.purpleSoft} strokeWidth={2.2} />;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -167,9 +169,9 @@ export function ThinkingIndicator({
     .padStart(2, '0')}`;
 
   const getStatusText = () => {
-    if (status === 'done') return 'تم تجهيز الرد';
-    if (status === 'error') return 'حصل خطأ';
-    return `جاري التفكير (${formattedTime})`;
+    if (status === 'done') return 'Response ready';
+    if (status === 'error') return 'Something went wrong';
+    return `Thinking (${formattedTime})`;
   };
 
   // ─── Render ────────────────────────────────────────────────────────────────
@@ -181,22 +183,26 @@ export function ThinkingIndicator({
       <View style={styles.wrapper}>
         {/* Trigger */}
         <Pressable onPress={toggleOpen} style={styles.trigger}>
-          <BlurView intensity={BlurIntensity.glass} tint="dark" style={StyleSheet.absoluteFill} />
+          <View style={styles.triggerBg} />
           <View style={styles.triggerContent}>
             <View style={styles.left}>
               <Animated.View style={pulseStyle}>
-                <BrainIcon status={status} />
+                <StatusGlyph status={status} />
               </Animated.View>
               <Text style={styles.text}>{getStatusText()}</Text>
             </View>
-            <Text style={styles.chevron}>{isOpen ? '▴' : '▾'}</Text>
+            {isOpen ? (
+              <ChevronUp size={18} color={Colors.white50} strokeWidth={2} />
+            ) : (
+              <ChevronDown size={18} color={Colors.white50} strokeWidth={2} />
+            )}
           </View>
         </Pressable>
 
         {/* Content */}
         {isOpen && (
           <Animated.View style={[styles.content, contentStyle]}>
-            <BlurView intensity={BlurIntensity.glass} tint="dark" style={StyleSheet.absoluteFill} />
+            <View style={styles.contentBg} />
 
             <View style={styles.steps}>
               {steps.map((step, i) => {
@@ -250,11 +256,19 @@ const styles = StyleSheet.create({
   trigger: {
     borderRadius: Radius.xl,
     overflow: 'hidden',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.borderSubtle,
+  },
+  triggerBg: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.surfaceGlass,
   },
   triggerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: Spacing.base,
+    zIndex: 1,
   },
   left: {
     flexDirection: 'row',
@@ -264,19 +278,22 @@ const styles = StyleSheet.create({
   text: {
     color: Colors.white70,
     fontSize: FontSize.md,
-    writingDirection: 'rtl',
-  },
-  chevron: {
-    color: Colors.white50,
   },
   content: {
     borderRadius: Radius.xl,
     marginTop: 4,
     overflow: 'hidden',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.borderSubtle,
+  },
+  contentBg: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(22,16,36,0.95)',
   },
   steps: {
     padding: Spacing.base,
     gap: Spacing.sm,
+    zIndex: 1,
   },
   stepRow: {
     flexDirection: 'row',
@@ -296,7 +313,6 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontSize: FontSize.base,
-    writingDirection: 'rtl',
   },
   textActive: {
     color: Colors.white80,

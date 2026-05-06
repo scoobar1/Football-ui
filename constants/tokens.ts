@@ -49,10 +49,54 @@ export const RATING_TEAL  = '#11998E';
 // ── Tab colors ────────────────────────────────────────────────────────────────
 export const TAB_COLORS = {
   Home:       '#f59e0b',
-  Leagues:    '#3B82F6',   // Electric Blue (updated from green)
-  Quiz:       '#3b82f6',
-  AI:         '#a855f7',   // Purple — AI chat tab
+  Leagues:    '#3B82F6',
+  Quiz:       '#3B82F6',
+  AI:         '#a855f7',
   Profile:    '#a855f7',
   Highlights: '#ef4444',
   Rank:       '#ec4899',
 } as const;
+
+// ── Unified radii (hubs, cards, chips) ────────────────────────────────────────
+export const RADIUS_SM = 10;
+export const RADIUS_MD = 14;
+export const RADIUS_LG = 18;
+export const RADIUS_XL = 20;
+
+export const BORDER_ARENA = 'rgba(255,255,255,0.1)';
+export const BORDER_ARENA_STRONG = 'rgba(255,255,255,0.12)';
+
+/** Root shell background — same on every tab screen */
+export const GRADIENT_BG_COLORS = [BG_BASE, BG_MID, BG_SURFACE, BG_BASE] as const;
+export const GRADIENT_BG_LOCATIONS = [0, 0.3, 0.7, 1] as const;
+
+/** Hub hero strips */
+export const GRADIENT_HERO_PURPLE_BLUE = ['rgba(124,58,237,0.22)', 'rgba(59,130,246,0.1)', 'transparent'] as const;
+export const GRADIENT_HERO_RANK = ['rgba(236,72,153,0.18)', 'rgba(124,58,237,0.08)', 'transparent'] as const;
+export const GRADIENT_HERO_REELS = ['rgba(239,68,68,0.18)', 'rgba(124,58,237,0.08)', 'transparent'] as const;
+
+/** Quiz streak card base */
+export const GRADIENT_QUIZ_STREAK = ['rgba(245,197,24,0.12)', 'rgba(124,58,237,0.08)', 'rgba(8,6,14,0.95)'] as const;
+
+/** Primary buttons */
+export const GRADIENT_CTA_PURPLE = [PURPLE_PRIMARY, PURPLE_DARK] as const;
+
+/** Modal / system overlays */
+export const OVERLAY_SCRIM = 'rgba(0,0,0,0.72)';
+export const SURFACE_MODAL = 'rgba(14,11,22,0.98)';
+
+/** Mirrors TAB_COLORS for surfaces (badges, rails) */
+export const ACCENT_ROUTE = {
+  home: TAB_COLORS.Home,
+  leagues: TAB_COLORS.Leagues,
+  quiz: TAB_COLORS.Quiz,
+  ai: TAB_COLORS.AI,
+  profile: TAB_COLORS.Profile,
+  highlights: TAB_COLORS.Highlights,
+  rank: TAB_COLORS.Rank,
+} as const;
+
+// ── Layout (home + lists) — use instead of magic numbers ─────────────────────
+export const SCREEN_PADDING_H = 16;
+export const SECTION_GAP = 24;
+export const SECTION_HEADER_TO_CONTENT = 10;

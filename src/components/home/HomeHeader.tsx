@@ -1,80 +1,103 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Settings, Search, Bell } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { Settings, Search, Bell, Zap } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MotiView } from 'moti';
 import {
-  PURPLE_PRIMARY, GOLD_PRIMARY, TEXT_PRIMARY,
+  GOLD_PRIMARY,
+  LIVE_RED,
+  PURPLE_SOFT,
+  TEXT_PRIMARY,
+  SCREEN_PADDING_H,
 } from '../../../constants/tokens';
+
+const ICON_SIZE = 18;
+const CLUSTER_PAD = 4;
 
 interface HomeHeaderProps {
   notificationCount?: number;
   coins?: number;
+  userName?: string;
 }
 
-export function HomeHeader({ notificationCount = 0, coins = 0 }: HomeHeaderProps) {
+export function HomeHeader({
+  notificationCount = 0,
+  coins = 0,
+  userName = 'Alex',
+}: HomeHeaderProps) {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Glass blur — allowed in header per steering rules */}
-      <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
-      {/* Mandatory fallback overlay */}
-      <View style={styles.fallback} />
-
-      <View style={styles.row}>
-        {/* Left side — Settings + Coins */}
-        <View style={styles.leftButtons}>
-          <TouchableOpacity activeOpacity={0.7} style={styles.iconBtn}>
-            <Settings size={18} color={TEXT_PRIMARY} />
-          </TouchableOpacity>
-
-          {/* Coins Badge — جنب ترس الإعدادات */}
-          <View style={styles.coinsBadge}>
-            <Text style={styles.coinsIcon}>⚡</Text>
-            <Text style={styles.coinsText}>{coins.toLocaleString()}</Text>
-          </View>
+      <View style={styles.inner}>
+        <View style={styles.titleBlock}>
+          <Text style={styles.brand}>90PLUS</Text>
+          <Text style={styles.greeting} numberOfLines={1}>
+            Hi, {userName}
+          </Text>
         </View>
 
-        {/* Right buttons — Search + Bell */}
-        <View style={styles.rightButtons}>
-          <TouchableOpacity activeOpacity={0.7} style={styles.iconBtn}>
-            <Search size={17} color={TEXT_PRIMARY} />
+        <View style={styles.trailing}>
+          <TouchableOpacity
+            activeOpacity={0.72}
+            onPress={() => router.push('/profile')}
+            style={styles.coins}
+            accessibilityRole="button"
+            accessibilityLabel="Open profile and wallet"
+          >
+            <Zap size={13} color={GOLD_PRIMARY} strokeWidth={2.25} />
+            <Text style={styles.coinsVal}>{coins.toLocaleString()}</Text>
           </TouchableOpacity>
 
-          <View>
-            <TouchableOpacity activeOpacity={0.7} style={styles.iconBtn}>
-              <Bell size={17} color={TEXT_PRIMARY} />
+          <View style={styles.toolbar}>
+            <TouchableOpacity
+              activeOpacity={0.72}
+              hitSlop={8}
+              style={styles.toolBtn}
+              onPress={() => router.push('/settings')}
+              accessibilityLabel="Settings"
+            >
+              <Settings color={TEXT_PRIMARY} size={ICON_SIZE} strokeWidth={2} />
             </TouchableOpacity>
-
-            {/* Notification badge */}
-            {notificationCount > 0 && (
-              <MotiView
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ type: 'timing', duration: 2000, loop: true }}
-                style={styles.notifBadge}
+            <View style={styles.sep} />
+            <TouchableOpacity
+              activeOpacity={0.72}
+              hitSlop={8}
+              style={styles.toolBtn}
+              onPress={() => router.push('/matches')}
+              accessibilityLabel="Search matches"
+            >
+              <Search color={TEXT_PRIMARY} size={ICON_SIZE} strokeWidth={2} />
+            </TouchableOpacity>
+            <View style={styles.sep} />
+            <View>
+              <TouchableOpacity
+                activeOpacity={0.72}
+                hitSlop={8}
+                style={styles.toolBtn}
+                onPress={() => router.push('/notifications')}
+                accessibilityLabel="Notifications"
               >
-                <Text style={styles.notifText}>
-                  {notificationCount > 99 ? '99+' : notificationCount}
-                </Text>
-              </MotiView>
-            )}
+                <Bell color={TEXT_PRIMARY} size={ICON_SIZE} strokeWidth={2} />
+              </TouchableOpacity>
+              {notificationCount > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeTxt}>
+                    {notificationCount > 99 ? '99+' : notificationCount}
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
       </View>
-
-      {/* Bottom border — blue→purple gradient line */}
-      <LinearGradient
-        colors={['transparent', 'rgba(59,130,246,0.3)', 'rgba(124,58,237,0.4)', 'transparent']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.borderGradient}
-      />
+      <View style={styles.hairline} />
     </View>
   );
 }
+
+export const HOME_HEADER_BODY_HEIGHT = 56;
 
 const styles = StyleSheet.create({
   container: {
@@ -83,103 +106,101 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 50,
-    overflow: 'hidden',
+    backgroundColor: 'rgba(6,4,10,0.92)',
   },
-  fallback: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(13,10,20,0.65)',
-  },
-  row: {
+  inner: {
+    minHeight: HOME_HEADER_BODY_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    height: 56,
+    paddingHorizontal: SCREEN_PADDING_H,
+    gap: 10,
+    paddingVertical: 6,
   },
-
-  // ── Left side — Settings + Coins ────────────────────────────────────────────
-  leftButtons: {
+  titleBlock: {
+    flex: 1,
+    minWidth: 0,
+  },
+  brand: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: PURPLE_SOFT,
+    letterSpacing: 0.8,
+    marginBottom: 2,
+  },
+  greeting: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+    letterSpacing: -0.3,
+    textAlign: 'left',
+  },
+  trailing: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-
-  // ── Icon buttons ────────────────────────────────────────────────────────────
-  iconBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.15)',
+  coins: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 10,
+    backgroundColor: 'rgba(245,197,24,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,197,24,0.22)',
+    maxWidth: 72,
+  },
+  coinsVal: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: GOLD_PRIMARY,
+  },
+  toolbar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.09)',
+    paddingHorizontal: CLUSTER_PAD,
+    paddingVertical: CLUSTER_PAD / 2,
+  },
+  toolBtn: {
+    width: 36,
+    height: 34,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#fff',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 0,
   },
-
-  // ── Coins badge — compact pill ───────────────────────────────────────────────
-  coinsBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    height: 34,
-    maxWidth: 110,
-    paddingHorizontal: 10,
-    borderRadius: 17,
-    backgroundColor: 'rgba(212,160,23,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(212,160,23,0.5)',
+  sep: {
+    width: StyleSheet.hairlineWidth,
+    height: 16,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    marginHorizontal: 1,
   },
-  coinsIcon: {
-    fontSize: 14,
-    lineHeight: 16,
-  },
-  coinsText: {
-    color: GOLD_PRIMARY,
-    fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: 0.2,
-  },
-
-  // ── Right buttons ────────────────────────────────────────────────────────────
-  rightButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-
-  // ── Notification badge ───────────────────────────────────────────────────────
-  notifBadge: {
+  badge: {
     position: 'absolute',
     top: 4,
-    right: 4,
-    minWidth: 16,
-    height: 16,
+    right: 6,
+    minWidth: 15,
+    height: 15,
     borderRadius: 8,
-    backgroundColor: PURPLE_PRIMARY,
-    borderWidth: 1.5,
-    borderColor: 'rgba(0,0,0,0.8)',
+    paddingHorizontal: 3,
+    backgroundColor: LIVE_RED,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
-    // Purple + blue layered glow
-    shadowColor: PURPLE_PRIMARY,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.7,
-    shadowRadius: 6,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.45)',
   },
-  notifText: {
-    color: '#fff',
+  badgeTxt: {
     fontSize: 9,
     fontWeight: '800',
+    color: '#fff',
   },
-
-  // ── Bottom gradient border ───────────────────────────────────────────────────
-  borderGradient: {
-    height: 1,
+  hairline: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: SCREEN_PADDING_H,
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
 });

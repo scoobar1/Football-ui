@@ -1,22 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Play, Heart } from 'lucide-react-native';
+import { Play, Heart, Film } from 'lucide-react-native';
 import Animated, {
   FadeInDown,
   useSharedValue, withRepeat, withTiming, useAnimatedStyle,
   Easing, withSpring,
 } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { SectionHeader } from './SectionHeader';
-import { PURPLE_SOFT } from '../../../constants/tokens';
+import { PURPLE_SOFT, SCREEN_PADDING_H } from '../../../constants/tokens';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const videos = [
-  { id: 1, title: 'Haaland Hat-trick vs Arsenal', views: '2.4M', likes: '145K', thumbnail: 'https://images.unsplash.com/photo-1657957746418-6a38df9e1ea7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400' },
-  { id: 2, title: 'Best Goals of the Week',       views: '1.8M', likes: '98K',  thumbnail: 'https://images.unsplash.com/photo-1705593973313-75de7bf95b56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400' },
-  { id: 4, title: 'Mbappé Night Skills',           views: '3.1M', likes: '210K', thumbnail: 'https://images.unsplash.com/photo-1710788617743-8b9ed4143325?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400' },
-  { id: 5, title: 'Epic Comeback Moments',         views: '1.2M', likes: '86K',  thumbnail: 'https://images.unsplash.com/photo-1763656812756-3539efd3e301?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400' },
+  {
+    id: 1,
+    title: 'Night games under the floodlights',
+    views: '2.4M',
+    likes: '145K',
+    thumbnail: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=78',
+  },
+  {
+    id: 2,
+    title: 'Grass-level matchday ambience',
+    views: '1.8M',
+    likes: '98K',
+    thumbnail: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=800&q=78',
+  },
+  {
+    id: 4,
+    title: 'Stadium build-up on kickoff weekend',
+    views: '3.1M',
+    likes: '210K',
+    thumbnail: 'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&w=800&q=78',
+  },
+  {
+    id: 5,
+    title: 'Training-ground rhythms',
+    views: '1.2M',
+    likes: '86K',
+    thumbnail: 'https://images.unsplash.com/photo-1522778119026-d647059886c4?auto=format&fit=crop&w=800&q=78',
+  },
 ];
 
 // ─── Shared shimmer ───────────────────────────────────────────────────────────
@@ -60,6 +85,7 @@ function SkeletonVideoCard({ shimmerX }: { shimmerX: ReturnType<typeof useShared
 
 // ─── Video Card ───────────────────────────────────────────────────────────────
 function VideoCard({ video, index }: { video: typeof videos[0]; index: number }) {
+  const router = useRouter();
   const [liked, setLiked] = useState(false);
   const scale = useSharedValue(1);
 
@@ -68,6 +94,7 @@ function VideoCard({ video, index }: { video: typeof videos[0]; index: number })
   }));
 
   const handlePress = () => {
+    router.push('/reels');
     scale.value = withSpring(0.95, { damping: 15 }, () => {
       scale.value = withSpring(1, { damping: 15 });
     });
@@ -109,7 +136,9 @@ function VideoCard({ video, index }: { video: typeof videos[0]; index: number })
           </View>
         </View>
       </TouchableOpacity>
-      <Text style={styles.title} numberOfLines={2}>{video.title}</Text>
+      <Text style={styles.title} numberOfLines={2}>
+        {video.title}
+      </Text>
     </Animated.View>
   );
 }
@@ -123,10 +152,10 @@ function EmptyVideoCard() {
       <View style={styles.emptyRingOuter} />
       <View style={styles.emptyRingMiddle} />
       <View style={styles.emptyRingInner}>
-        <Text style={styles.emptyCardEmoji}>🎬</Text>
+        <Film size={18} color="rgba(167,139,250,0.45)" strokeWidth={2} />
       </View>
-      <Text style={styles.emptyCardTitle}>لا يوجد فيديو</Text>
-      <Text style={styles.emptyCardSub}>قريباً</Text>
+      <Text style={styles.emptyCardTitle}>No clip</Text>
+      <Text style={styles.emptyCardSub}>Soon</Text>
     </View>
   );
 }
@@ -140,14 +169,14 @@ function EmptySection() {
         <View style={styles.emptySectionRing2} />
         <View style={styles.emptySectionRing1} />
         <View style={styles.emptySectionIconBox}>
-          <Text style={styles.emptySectionEmoji}>📹</Text>
+          <Film size={22} color="rgba(167,139,250,0.55)" strokeWidth={2} />
         </View>
       </View>
-      <Text style={styles.emptySectionTitle}>لا توجد مقاطع بعد</Text>
-      <Text style={styles.emptySectionSub}>لم يتم نشر أي مقاطع بعد{'\n'}تابعنا للمزيد قريباً</Text>
+      <Text style={styles.emptySectionTitle}>No reels yet</Text>
+      <Text style={styles.emptySectionSub}>Nothing published{'\n'}Check back soon</Text>
       <View style={styles.emptySectionDivider} />
       <View style={styles.emptySectionChip}>
-        <Text style={styles.emptySectionChipText}>🔔  فعّل الإشعارات</Text>
+        <Text style={styles.emptySectionChipText}>Enable notifications for new drops</Text>
       </View>
     </View>
   );
@@ -159,12 +188,19 @@ interface VideoListProps {
 }
 
 export function VideoList({ isLoading = false }: VideoListProps) {
+  const router = useRouter();
   const hasVideos = videos.length > 0;
   const shimmerX = useShimmer();
+  const openReelsHub = () => router.push('/reels');
 
   return (
     <View style={styles.section}>
-      <SectionHeader icon="📈" title="Trending Reels" action="View All" />
+      <SectionHeader
+        subtitle="Curated clips"
+        title="Trending reels"
+        action="View all"
+        onAction={openReelsHub}
+      />
       {isLoading ? (
         <ScrollView
           horizontal
@@ -195,8 +231,8 @@ export function VideoList({ isLoading = false }: VideoListProps) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  section: { marginBottom: 28 },
-  scrollContent: { paddingHorizontal: 16, paddingBottom: 4, gap: 12 },
+  section: { marginBottom: 0 },
+  scrollContent: { paddingHorizontal: SCREEN_PADDING_H, paddingBottom: 4, gap: 12 },
 
   // ── Skeleton ──────────────────────────────────────────────────────────────
   skeletonCard: { width: 155, flexShrink: 0 },
@@ -246,7 +282,14 @@ const styles = StyleSheet.create({
   statsLeft: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   likeBtn: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   statText: { color: 'rgba(255,255,255,0.82)', fontSize: 9, fontWeight: '700' },
-  title: { color: 'rgba(255,255,255,0.70)', fontSize: 10.5, fontWeight: '500', marginTop: 6, lineHeight: 15 },
+  title: {
+    color: 'rgba(255,255,255,0.78)',
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 7,
+    lineHeight: 15,
+    letterSpacing: -0.1,
+  },
 
   // ── Empty Video Card ──────────────────────────────────────────────────────
   emptyCard: {
@@ -276,13 +319,12 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(124,58,237,0.25)',
     alignItems: 'center', justifyContent: 'center',
   },
-  emptyCardEmoji: { fontSize: 16, opacity: 0.6 },
   emptyCardTitle: { color: 'rgba(167,139,250,0.65)', fontSize: 10, fontWeight: '700', letterSpacing: 0.2 },
   emptyCardSub: { color: 'rgba(255,255,255,0.2)', fontSize: 9, fontWeight: '500' },
 
   // ── Empty Section ─────────────────────────────────────────────────────────
   emptySection: {
-    marginHorizontal: 16, paddingVertical: 44, paddingHorizontal: 24,
+    marginHorizontal: SCREEN_PADDING_H, paddingVertical: 44, paddingHorizontal: 24,
     alignItems: 'center', borderRadius: 20,
     backgroundColor: 'rgba(10,7,18,0.95)',
     borderWidth: 0.5, borderColor: 'rgba(124,58,237,0.2)',
@@ -307,7 +349,6 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(124,58,237,0.3)',
     alignItems: 'center', justifyContent: 'center',
   },
-  emptySectionEmoji: { fontSize: 22, opacity: 0.7 },
   emptySectionTitle: { color: 'rgba(167,139,250,0.8)', fontSize: 16, fontWeight: '700', letterSpacing: -0.2, marginTop: 2 },
   emptySectionSub: { color: 'rgba(255,255,255,0.25)', fontSize: 12, textAlign: 'center', lineHeight: 18 },
   emptySectionDivider: { width: 40, height: 0.5, backgroundColor: 'rgba(124,58,237,0.25)', marginVertical: 10 },

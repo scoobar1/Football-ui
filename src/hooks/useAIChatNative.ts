@@ -2,11 +2,8 @@
  * useAIChatNative.ts
  * Core chat hook for React Native — SSE streaming via XMLHttpRequest.
  *
- * يتصل بـ ChatAi/chat-backend (simple-server.ts) مباشرة.
- * الـ backend بيستخدم SSE على /api/chat/stream — مش WebSocket.
- *
- * XMLHttpRequest بيدعم streaming على React Native بشكل native
- * عبر onreadystatechange + responseText — بدون أي polyfill.
+ * Talks to chat-backend (simple-server.ts). The backend streams SSE on /api/chat/stream (not WebSockets).
+ * XMLHttpRequest exposes incremental responseText on React Native via onreadystatechange.
  *
  * Protocol:
  *   POST /api/chat/stream → SSE
@@ -68,7 +65,7 @@ const INITIAL_MESSAGES: Message[] = [
   {
     id: '1',
     role: 'ai',
-    text: 'أهلاً يا محمود! 👋 أنا 90Plus AI مساعدك الذكي لكل ما يخص كرة القدم والرياضة. كيف أقدر أساعدك اليوم؟',
+    text: "Hey there! I'm 90Plus AI — ask me anything about football or performance. How can I help today?",
     time: '9:41',
   },
 ];
@@ -76,11 +73,11 @@ const INITIAL_MESSAGES: Message[] = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function now(): string {
-  return new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+  return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatTime(dateLike: string | number | Date): string {
-  return new Date(dateLike).toLocaleTimeString('ar-EG', {
+  return new Date(dateLike).toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
   });
@@ -97,10 +94,8 @@ function toHistoryFormat(messages: Message[]) {
 
 /**
  * Parse SSE chunks from XMLHttpRequest.responseText.
- * Returns all complete `data: {...}` lines parsed since lastIndex.
- *
- * Fix: نحسب الـ newIndex بناءً على آخر \n كامل بس
- * عشان لو الـ chunk جه في النص مش بيضيع الـ line الأخيرة
+ * Returns complete `data: {...}` lines since lastIndex.
+ * newIndex stops at the last full newline so partial chunks are preserved.
  */
 function parseSSEChunk(
   responseText: string,
@@ -108,14 +103,11 @@ function parseSSEChunk(
 ): { events: SSEData[]; newIndex: number } {
   const newText = responseText.slice(lastIndex);
 
-  // ابحث عن آخر newline كامل — كل حاجة بعده ممكن تكون chunk ناقص
   const lastNewline = newText.lastIndexOf('\n');
   if (lastNewline === -1) {
-    // مفيش line كاملة لسه — استنى chunk جاي
     return { events: [], newIndex: lastIndex };
   }
 
-  // شغّل على الجزء الكامل بس
   const completeText = newText.slice(0, lastNewline + 1);
   const lines = completeText.split('\n');
   const events: SSEData[] = [];
@@ -224,7 +216,7 @@ export function useAIChatNative() {
         'Content-Type': 'application/json',
         'x-user-id': userIdRef.current,
       },
-      body: JSON.stringify({ title: 'محادثة جديدة' }),
+      body: JSON.stringify({ title: 'New chat' }),
     });
     if (!res.ok) throw new Error('Failed to create conversation');
     const data = await res.json() as { conversation: Conversation };
@@ -301,7 +293,7 @@ export function useAIChatNative() {
     setMessagesRemaining(prev => Math.max(0, prev - 1));
 
     if (!currentConversationId) {
-      setError('لا توجد محادثة نشطة.');
+      setError('No active conversation.');
       setIsLoading(false);
       setIsThinking(false);
       setMessagesRemaining(prev => prev + 1);
@@ -354,7 +346,6 @@ export function useAIChatNative() {
           lastIndexRef.current,
         );
 
-        // لو مفيش events جديدة — مفيش حاجة نعملها
         if (newIndex === lastIndexRef.current) return;
         lastIndexRef.current = newIndex;
 
@@ -415,9 +406,9 @@ export function useAIChatNative() {
           };
           setMessagesRemaining(0);
           if (errData.resetAt) setResetTime(new Date(errData.resetAt));
-          setError('انتهت رسائلك اليومية.');
+          setError('You’ve reached your daily message limit.');
         } catch {
-          setError('انتهت رسائلك اليومية.');
+          setError('You’ve reached your daily message limit.');
           setMessagesRemaining(0);
         }
         setIsLoading(false);
@@ -434,7 +425,7 @@ export function useAIChatNative() {
 
     xhr.onerror = () => {
       if (abortRef.current) return;
-      setError('حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.');
+      setError('Connection error. Please try again.');
       setMessagesRemaining(prev => prev + 1);
       setIsLoading(false);
       setIsThinking(false);
@@ -442,7 +433,7 @@ export function useAIChatNative() {
 
     xhr.ontimeout = () => {
       if (abortRef.current) return;
-      setError('انتهت مهلة الاتصال. يرجى المحاولة مرة أخرى.');
+      setError('Request timed out. Please try again.');
       setMessagesRemaining(prev => prev + 1);
       setIsLoading(false);
       setIsThinking(false);

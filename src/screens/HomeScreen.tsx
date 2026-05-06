@@ -8,13 +8,14 @@ import Animated, {
   withDelay, Easing,
 } from 'react-native-reanimated';
 
-import { HomeHeader } from '../components/home/HomeHeader';
-import { WelcomeCarousel } from '../components/home/WelcomeCarousel';
+import { HomeHeader, HOME_HEADER_BODY_HEIGHT } from '../components/home/HomeHeader';
+import { HomeHero } from '../components/home/HomeHero';
 import { MatchList } from '../components/home/MatchList';
 import { VideoList } from '../components/home/VideoList';
 import { PlayerList } from '../components/home/PlayerList';
 import { TeamPitch } from '../components/home/TeamPitch';
 import BottomNav from '../components/BottomNav';
+import { ScreenSection } from '../components/layout/ScreenSection';
 import { BG_BASE, BG_MID, BG_SURFACE } from '../../constants/tokens';
 
 // ─── Animated Ambient Glow Orbs ───────────────────────────────────────────────
@@ -32,26 +33,24 @@ function AmbientGlow() {
   const orb3Scale  = useSharedValue(1.0);
 
   React.useEffect(() => {
-    // Orb 1
+    // Orb 1 — softer pulses (less competition with foreground content)
     orb1Opacity.value = withRepeat(
-      withTiming(0.35, { duration: 4000, easing: Easing.inOut(Easing.ease) }), -1, true
+      withTiming(0.22, { duration: 4000, easing: Easing.inOut(Easing.ease) }), -1, true
     );
     orb1Scale.value = withRepeat(
-      withTiming(1.1, { duration: 4000, easing: Easing.inOut(Easing.ease) }), -1, true
+      withTiming(1.06, { duration: 4000, easing: Easing.inOut(Easing.ease) }), -1, true
     );
-    // Orb 2 — delayed 1500ms
     orb2Opacity.value = withDelay(1500, withRepeat(
-      withTiming(0.28, { duration: 5500, easing: Easing.inOut(Easing.ease) }), -1, true
+      withTiming(0.14, { duration: 5500, easing: Easing.inOut(Easing.ease) }), -1, true
     ));
     orb2Scale.value = withDelay(1500, withRepeat(
-      withTiming(1.15, { duration: 5500, easing: Easing.inOut(Easing.ease) }), -1, true
+      withTiming(1.06, { duration: 5500, easing: Easing.inOut(Easing.ease) }), -1, true
     ));
-    // Orb 3 — delayed 800ms
     orb3Opacity.value = withDelay(800, withRepeat(
-      withTiming(0.22, { duration: 6000, easing: Easing.inOut(Easing.ease) }), -1, true
+      withTiming(0.12, { duration: 6000, easing: Easing.inOut(Easing.ease) }), -1, true
     ));
     orb3Scale.value = withDelay(800, withRepeat(
-      withTiming(1.2, { duration: 6000, easing: Easing.inOut(Easing.ease) }), -1, true
+      withTiming(1.06, { duration: 6000, easing: Easing.inOut(Easing.ease) }), -1, true
     ));
   }, []);
 
@@ -95,7 +94,7 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const NAV_BOTTOM_PADDING = Math.max(insets.bottom, 16) + 56 + 24;
-  const HEADER_HEIGHT = 56 + insets.top;
+  const headerOffset = insets.top + HOME_HEADER_BODY_HEIGHT + 2;
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -123,7 +122,7 @@ export default function HomeScreen() {
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={{
-          paddingTop: HEADER_HEIGHT + 16,
+          paddingTop: headerOffset + 14,
           paddingBottom: NAV_BOTTOM_PADDING,
         }}
         showsVerticalScrollIndicator={false}
@@ -138,11 +137,21 @@ export default function HomeScreen() {
           />
         }
       >
-        <WelcomeCarousel />
-        <MatchList />
-        <VideoList />
-        <PlayerList />
-        <TeamPitch />
+        <ScreenSection>
+          <HomeHero />
+        </ScreenSection>
+        <ScreenSection>
+          <MatchList />
+        </ScreenSection>
+        <ScreenSection>
+          <VideoList />
+        </ScreenSection>
+        <ScreenSection>
+          <PlayerList />
+        </ScreenSection>
+        <ScreenSection>
+          <TeamPitch />
+        </ScreenSection>
       </ScrollView>
 
       {/* Floating Header */}
@@ -171,20 +180,20 @@ const styles = StyleSheet.create({
     width: 350,
     height: 350,
     top: -80,
-    backgroundColor: 'rgba(76,29,149,0.4)',
+    backgroundColor: 'rgba(76,29,149,0.28)',
   },
   orb2: {
     width: 280,
     height: 280,
     top: 200,
     right: -100,
-    backgroundColor: 'rgba(59,130,246,0.25)',
+    backgroundColor: 'rgba(59,130,246,0.18)',
   },
   orb3: {
     width: 250,
     height: 250,
     bottom: 200,
     left: -80,
-    backgroundColor: 'rgba(91,33,182,0.2)',
+    backgroundColor: 'rgba(91,33,182,0.14)',
   },
 });

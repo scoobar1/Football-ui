@@ -72,8 +72,8 @@ export function ScrollToBottomButton({
 
   // ✅ accessibility label ديناميكي
   const a11yLabel = badgeLabel
-    ? `اسكرول للأسفل، ${newMessagesCount} رسالة جديدة`
-    : 'اسكرول للأسفل';
+    ? `Scroll to bottom, ${newMessagesCount} new messages`
+    : 'Scroll to bottom';
 
   return (
     // ✅ shadow wrapper منفصل — لا overflow يقطعه

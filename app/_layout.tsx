@@ -12,8 +12,18 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="register" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="login" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="forgot-password" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="home" />
-        <Stack.Screen name="chat" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="matches" />
+        <Stack.Screen name="quiz" />
+        <Stack.Screen name="profile" />
+        <Stack.Screen name="notifications" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="reels" />
+        <Stack.Screen name="rank" />
+        <Stack.Screen name="chat" options={{ animation: 'fade' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

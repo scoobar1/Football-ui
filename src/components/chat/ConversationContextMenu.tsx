@@ -175,7 +175,7 @@ export const ConversationContextMenu = React.memo(({
         exiting={FadeOut.duration(200)}
         style={StyleSheet.absoluteFill}
       >
-        <TouchableWithoutFeedback onPress={onClose} accessibilityLabel="إغلاق القائمة">
+        <TouchableWithoutFeedback onPress={onClose} accessibilityLabel="Close menu">
           <View style={styles.backdrop}>
             <BlurView
               intensity={BlurIntensity.contextMenu}
@@ -224,7 +224,7 @@ export const ConversationContextMenu = React.memo(({
           <View style={styles.menuContent}>
             {/* Conversation title preview */}
             <View style={styles.previewContainer}>
-              <Text style={styles.previewLabel}>المحادثة</Text>
+              <Text style={styles.previewLabel}>Conversation</Text>
               <Text style={styles.previewText} numberOfLines={1}>
                 {conversationTitle}
               </Text>
@@ -234,13 +234,13 @@ export const ConversationContextMenu = React.memo(({
 
             <MenuItem
               icon={<PinIcon isPinned={isPinned} />}
-              text={isPinned ? 'إلغاء التثبيت' : 'تثبيت في الأعلى'}
+              text={isPinned ? 'Unpin' : 'Pin to top'}
               onPress={onPin}
               delay={80}
             />
             <MenuItem
               icon={<RenameIcon />}
-              text="إعادة تسمية"
+              text="Rename"
               onPress={onRename}
               delay={110}
             />
@@ -249,13 +249,13 @@ export const ConversationContextMenu = React.memo(({
 
             <MenuItem
               icon={<CopyIcon />}
-              text="نسخ المحادثة"
+              text="Copy conversation"
               onPress={onCopy}
               delay={140}
             />
             <MenuItem
               icon={<ShareIcon />}
-              text="مشاركة"
+              text="Share"
               onPress={onShare}
               delay={170}
             />
@@ -264,7 +264,7 @@ export const ConversationContextMenu = React.memo(({
 
             <MenuItem
               icon={<DeleteIcon />}
-              text="حذف"
+              text="Delete"
               onPress={onDelete}
               danger
               delay={200}
@@ -336,19 +336,17 @@ const styles = StyleSheet.create({
   previewLabel: {
     fontSize: FontSize.xs,
     color: Colors.white30,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    textAlign: 'left',
     letterSpacing: 0.5,
   },
   previewText: {
     fontSize: FontSize.md,
     color: Colors.white50,
-    textAlign: 'right',
+    textAlign: 'left',
     lineHeight: FontSize.md * 1.6,
-    writingDirection: 'rtl',
   },
   menuItem: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
     paddingHorizontal: Spacing.base,
@@ -369,8 +367,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize['2xl'],
     fontWeight: '500',
     color: Colors.white80,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    textAlign: 'left',
   },
   menuItemTextDanger: {
     color: Colors.error,

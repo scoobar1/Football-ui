@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Trophy } from 'lucide-react-native';
 import { SectionHeader } from './SectionHeader';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Rect, Line, Circle, Path, Defs } from 'react-native-svg';
+import Svg, { Rect, Line, Circle, Path } from 'react-native-svg';
 import { MotiView } from 'moti';
-import { PURPLE_PRIMARY, BLUE_PRIMARY } from '../../../constants/tokens';
+import { PURPLE_PRIMARY, SCREEN_PADDING_H } from '../../../constants/tokens';
 
 // ─── Player data — null means empty slot ─────────────────────────────────────
 type PitchPlayer = {
@@ -124,7 +126,7 @@ function PitchEmptyOverlay() {
         transition={{ type: 'timing', duration: 2000, loop: true }}
         style={styles.pulseRing}
       />
-      <Text style={styles.pitchEmptyIcon}>🏆</Text>
+      <Trophy size={28} color="rgba(253,224,71,0.55)" strokeWidth={2} />
     </View>
   );
 }
@@ -135,9 +137,17 @@ interface TeamPitchProps {
 }
 
 export function TeamPitch({ hasLineup = true }: TeamPitchProps) {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
-      <SectionHeader icon="🏆" title="Team of the Month" badge="4-3-3" />
+      <SectionHeader
+        subtitle="Formation"
+        title="Team of the month"
+        badge="4-3-3"
+        action="Details"
+        onAction={() => router.push('/rank')}
+      />
 
       <View style={styles.pitchWrapper}>
         {/* Blue→Purple gradient border simulation */}
@@ -215,8 +225,8 @@ export function TeamPitch({ hasLineup = true }: TeamPitchProps) {
       {/* Below pitch text when no lineup */}
       {!hasLineup && (
         <View style={styles.pitchEmptyText}>
-          <Text style={styles.pitchEmptyTitle}>🏆 في انتظار أبطال الشهر!</Text>
-          <Text style={styles.pitchEmptySubtitle}>شارك وتفاعل لتكون من التشكيلة</Text>
+          <Text style={styles.pitchEmptyTitle}>Monthly heroes incoming</Text>
+          <Text style={styles.pitchEmptySubtitle}>Stay active to make the XI</Text>
         </View>
       )}
     </View>
@@ -224,7 +234,7 @@ export function TeamPitch({ hasLineup = true }: TeamPitchProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: 16, paddingBottom: 16 },
+  container: { paddingHorizontal: SCREEN_PADDING_H, paddingBottom: 16 },
 
   // ── Pitch border gradient wrapper ─────────────────────────────────────────
   pitchWrapper: {
@@ -327,8 +337,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: 'rgba(124,58,237,0.4)',
     borderStyle: 'dashed',
   },
-  pitchEmptyIcon: { fontSize: 28, opacity: 0.4 },
-
   // Below pitch text
   pitchEmptyText: { alignItems: 'center', marginTop: 16, gap: 4 },
   pitchEmptyTitle: { color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '700' },

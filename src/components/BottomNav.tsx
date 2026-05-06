@@ -30,7 +30,7 @@ const AIIcon = ({ color, size }: { color: string; size: number }) => (
   <Sparkles color={color} size={size} strokeWidth={2} />
 );
 
-const ICON_COLOR = 'rgba(255,255,255,0.5)';
+const ICON_COLOR = 'rgba(255,255,255,0.55)';
 
 // ─── Nav Item ─────────────────────────────────────────────────────────────────
 interface NavItemProps {
@@ -47,10 +47,6 @@ const NavItem = ({ icon: Icon, isActive, onPress, onPressIn, scaleAnim, activeCo
     {/* Outer glow — larger, more diffuse */}
     {isActive && (
       <View style={[styles.glowOuter, { backgroundColor: activeColor, shadowColor: activeColor }]} />
-    )}
-    {/* Inner glow */}
-    {isActive && (
-      <View style={[styles.glowInner, { backgroundColor: activeColor, shadowColor: activeColor }]} />
     )}
     <Animated.View
       style={[
@@ -89,11 +85,16 @@ const BottomNav = () => {
   const isMatchDetails = pathname?.includes('match-details');
   const isMatches = pathname?.includes('matches');
   const isChat = pathname?.includes('chat');
+  const isProfileStack =
+    pathname?.includes('/notifications') ||
+    pathname?.includes('/settings');
   const activeTab: TabName =
     isMatchDetails || isMatches
       ? 'Leagues'
       : isChat
       ? 'AI'
+      : isProfileStack
+      ? 'Profile'
       : (tabs.find(tab => pathname === tab.route || pathname?.toLowerCase() === tab.route)?.name ?? 'Home');
 
   useEffect(() => {
@@ -155,10 +156,7 @@ const BottomNav = () => {
                 >
                   {/* Extra-strong glow for AI tab */}
                   {isActive && (
-                    <>
-                      <View style={[styles.glowOuter, styles.aiGlowOuter, { backgroundColor: activeColor, shadowColor: activeColor }]} />
-                      <View style={[styles.glowInner, { backgroundColor: activeColor, shadowColor: activeColor }]} />
-                    </>
+                    <View style={[styles.glowOuter, styles.aiGlowOuter, { backgroundColor: activeColor, shadowColor: activeColor }]} />
                   )}
                   <Animated.View
                     style={[
@@ -193,10 +191,7 @@ const BottomNav = () => {
                   activeOpacity={0.7}
                 >
                   {isActive && (
-                    <>
-                      <View style={[styles.glowOuter, { backgroundColor: activeColor, shadowColor: activeColor }]} />
-                      <View style={[styles.glowInner, { backgroundColor: activeColor, shadowColor: activeColor }]} />
-                    </>
+                    <View style={[styles.glowOuter, { backgroundColor: activeColor, shadowColor: activeColor }]} />
                   )}
                   <Animated.View
                     style={[
@@ -271,18 +266,14 @@ const styles = StyleSheet.create({
   // Layered glow — outer (larger, more diffuse)
   glowOuter: {
     position: 'absolute',
-    width: 64, height: 64, borderRadius: 32,
-    opacity: 0.12,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    opacity: 0.1,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6, shadowRadius: 20, elevation: 6,
-  },
-  // Inner glow (tighter, brighter)
-  glowInner: {
-    position: 'absolute',
-    width: 48, height: 48, borderRadius: 24,
-    opacity: 0.4,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8, shadowRadius: 15, elevation: 10,
+    shadowOpacity: 0.45,
+    shadowRadius: 16,
+    elevation: 5,
   },
 
   iconContainer: {
@@ -296,12 +287,12 @@ const styles = StyleSheet.create({
   },
   // AI tab — stronger glow + gradient container
   aiGlowOuter: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    opacity: 0.18,
-    shadowOpacity: 0.8,
-    shadowRadius: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    opacity: 0.14,
+    shadowOpacity: 0.65,
+    shadowRadius: 20,
   },
   aiActiveContainer: {
     overflow: 'hidden',

@@ -187,7 +187,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: FontSize.lg,
     color: Colors.white,
-    writingDirection: 'rtl',
   },
 
   action: {
