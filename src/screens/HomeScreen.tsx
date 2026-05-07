@@ -10,7 +10,7 @@ import Animated, {
 
 import { HomeHeader, HOME_HEADER_BODY_HEIGHT } from '../components/home/HomeHeader';
 import { HomeHero } from '../components/home/HomeHero';
-import { MatchList } from '../components/home/MatchList';
+import { HomeMatchesBlock } from '../components/home/HomeMatchesBlock';
 import { VideoList } from '../components/home/VideoList';
 import { PlayerList } from '../components/home/PlayerList';
 import { TeamPitch } from '../components/home/TeamPitch';
@@ -141,7 +141,7 @@ export default function HomeScreen() {
           <HomeHero />
         </ScreenSection>
         <ScreenSection>
-          <MatchList />
+          <HomeMatchesBlock />
         </ScreenSection>
         <ScreenSection>
           <VideoList />

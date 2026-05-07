@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { LucideIcon } from 'lucide-react-native';
@@ -11,8 +11,6 @@ import {
   GOLD_PRIMARY,
   BLUE_PRIMARY,
   PURPLE_SOFT,
-  SCREEN_PADDING_H,
-  GRADIENT_HERO_PURPLE_BLUE,
   BORDER_ARENA,
   RADIUS_LG,
 } from '../../../constants/tokens';
@@ -82,11 +80,15 @@ export default function NotificationsScreen() {
     <MainShell
       title="Notifications"
       subtitle="Mock inbox — wire push and in-app feeds when the backend is ready."
-      onBackPress={() => router.back()}
+      onBackPress={() => (router.canGoBack() ? router.back() : router.replace('/home'))}
     >
-      <View style={styles.hero}>
+      <ImageBackground
+        source={{ uri: 'https://images.unsplash.com/photo-1614632537190-23e4146777db?auto=format&fit=crop&w=1400&q=80' }}
+        style={styles.hero}
+        imageStyle={styles.heroImage}
+      >
         <LinearGradient
-          colors={[...GRADIENT_HERO_PURPLE_BLUE]}
+          colors={['rgba(8,6,14,0.45)', 'rgba(8,6,14,0.8)', 'rgba(8,6,14,0.96)']}
           style={StyleSheet.absoluteFill}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -98,11 +100,19 @@ export default function NotificationsScreen() {
               {rows.filter((r) => r.unread).length} unread · {rows.length} total
             </Text>
           </View>
-          <Bell size={20} color={PURPLE_SOFT} strokeWidth={2.4} />
+          <View style={styles.heroBellWrap}>
+            <Bell size={20} color={PURPLE_SOFT} strokeWidth={2.4} />
+          </View>
         </View>
-      </View>
+      </ImageBackground>
 
       <TouchableOpacity activeOpacity={0.85} style={styles.markRow} onPress={markAllRead}>
+        <LinearGradient
+          colors={['rgba(124,58,237,0.18)', 'rgba(76,29,149,0.08)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.markRowBg}
+        />
         <Text style={styles.markTxt}>Mark all as read</Text>
       </TouchableOpacity>
 
@@ -130,19 +140,30 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
   hero: {
-    marginHorizontal: -SCREEN_PADDING_H,
     marginBottom: 14,
-    paddingHorizontal: SCREEN_PADDING_H,
+    paddingHorizontal: 14,
     paddingVertical: 14,
     borderRadius: RADIUS_LG,
     overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: BORDER_ARENA,
+    minHeight: 92,
   },
+  heroImage: { opacity: 0.93 },
   heroRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  heroBellWrap: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.3)',
+    backgroundColor: 'rgba(10,8,18,0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heroEyebrow: {
     color: TEXT_MUTED,
@@ -162,8 +183,15 @@ const styles = StyleSheet.create({
   markRow: {
     alignSelf: 'flex-end',
     marginBottom: 14,
-    paddingVertical: 6,
-    paddingHorizontal: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.3)',
+  },
+  markRowBg: {
+    ...StyleSheet.absoluteFillObject,
   },
   markTxt: {
     fontSize: 13,
@@ -177,22 +205,22 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 10,
     borderRadius: RADIUS_LG,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: BORDER_ARENA,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: 'rgba(16,12,26,0.9)',
   },
   cardUnread: {
     borderColor: 'rgba(124,58,237,0.35)',
-    backgroundColor: 'rgba(124,58,237,0.06)',
+    backgroundColor: 'rgba(34,22,52,0.85)',
   },
   iconWrap: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(8,6,14,0.65)',
+    backgroundColor: 'rgba(8,6,14,0.82)',
   },
   cardMid: { flex: 1, marginHorizontal: 10 },
   cardTitle: {

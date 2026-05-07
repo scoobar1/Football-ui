@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -7,7 +7,6 @@ import { MainShell } from '../../components/shell/MainShell';
 import {
   TEXT_PRIMARY,
   TEXT_MUTED,
-  GOLD_PRIMARY,
   PURPLE_SOFT,
   GLASS_BORDER_TOP,
   GLASS_BORDER_BOTTOM,
@@ -44,9 +43,13 @@ export default function ProfileHubScreen() {
       title="Profile"
       subtitle="Quick hub before wiring a real account and cloud sync."
     >
-      <View style={styles.heroShell}>
+      <ImageBackground
+        source={{ uri: 'https://images.unsplash.com/photo-1574629810360-7efbbe195195?auto=format&fit=crop&w=1400&q=80' }}
+        style={styles.heroShell}
+        imageStyle={styles.heroShellImage}
+      >
         <LinearGradient
-          colors={[...GRADIENT_HERO_PURPLE_BLUE]}
+          colors={['rgba(10,8,18,0.18)', 'rgba(10,8,18,0.7)', 'rgba(10,8,18,0.95)']}
           style={StyleSheet.absoluteFill}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -58,14 +61,15 @@ export default function ProfileHubScreen() {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <View style={styles.avatarInner}>
-              <Text style={styles.avatarTxt}>A</Text>
-            </View>
+            <Image
+              source={{ uri: 'https://images.unsplash.com/photo-1614632537423-1e6c2e7e0aab?auto=format&fit=crop&w=300&q=80' }}
+              style={styles.avatarInner}
+            />
           </LinearGradient>
           <Text style={styles.name}>Alex • Active player</Text>
           <Text style={styles.handle}>@alex_90plus · Member since Oct 2025</Text>
         </View>
-      </View>
+      </ImageBackground>
 
       <View style={styles.statRow}>
         {STATS.map((s) => (
@@ -101,13 +105,13 @@ export default function ProfileHubScreen() {
 
 const styles = StyleSheet.create({
   heroShell: {
-    marginHorizontal: -SCREEN_PADDING_H,
     marginBottom: 20,
     borderRadius: RADIUS_LG,
     overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: BORDER_ARENA,
   },
+  heroShellImage: { opacity: 0.95 },
   hero: { alignItems: 'center', paddingVertical: 22, paddingHorizontal: SCREEN_PADDING_H },
   avatarRing: {
     width: 96,
@@ -121,11 +125,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 45,
-    backgroundColor: 'rgba(6,5,12,0.95)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.18)',
   },
-  avatarTxt: { fontSize: 36, fontWeight: '900', color: GOLD_PRIMARY },
 
   name: { marginTop: 12, fontSize: 20, fontWeight: '800', color: TEXT_PRIMARY },
   handle: { marginTop: 4, fontSize: 13, color: TEXT_MUTED, textAlign: 'center', paddingHorizontal: 16 },
@@ -143,9 +145,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'rgba(17,13,28,0.92)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center',
   },
   statVal: { color: PURPLE_SOFT, fontSize: 16, fontWeight: '800' },
@@ -166,7 +168,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 8,
     borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.035)',
+    backgroundColor: 'rgba(17,13,28,0.88)',
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,

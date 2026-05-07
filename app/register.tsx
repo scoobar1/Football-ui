@@ -99,11 +99,11 @@ export default function RegisterScreen() {
       <View style={styles.socialRow}>
         <TouchableOpacity activeOpacity={0.9} style={styles.social}>
           <Text style={styles.googleG}>G</Text>
-          <Text style={styles.socialTxt}>Continue with Google</Text>
+          <Text style={styles.socialTxt} numberOfLines={1}>Google</Text>
         </TouchableOpacity>
         <TouchableOpacity activeOpacity={0.9} style={styles.social}>
           <Apple color={TEXT_PRIMARY} size={20} />
-          <Text style={styles.socialTxt}>Continue with Apple</Text>
+          <Text style={styles.socialTxt} numberOfLines={1}>Apple</Text>
         </TouchableOpacity>
       </View>
 
@@ -152,8 +152,9 @@ const styles = StyleSheet.create({
   divLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(255,255,255,0.12)' },
   divTxt: { fontSize: 12, color: TEXT_MUTED, fontWeight: '600' },
 
-  socialRow: { gap: 10 },
+  socialRow: { flexDirection: 'row', gap: 10 },
   social: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

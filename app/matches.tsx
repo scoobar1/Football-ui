@@ -1,3 +1,3 @@
-import MatchesHubScreen from '../src/screens/hubs/MatchesHubScreen';
+import MatchesHubScreen from '../src/screens/hubs/MatchesHubScreenV2';
 
 export default MatchesHubScreen;

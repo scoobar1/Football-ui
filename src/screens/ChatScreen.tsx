@@ -1,5 +1,5 @@
 /**
- * ChatScreen — full-screen chat with bottom tab bar, solid surfaces (no full-screen blur).
+ * ChatScreen — full-screen chat with solid surfaces, no bottom nav.
  */
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
@@ -15,6 +15,7 @@ import {
   Alert,
   Modal,
   Clipboard,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -34,7 +35,6 @@ import Svg, { Path, Line, Polyline } from 'react-native-svg';
 import { MessageCircle } from 'lucide-react-native';
 
 import { useAIChatNative, Conversation } from '../hooks/useAIChatNative';
-import BottomNav from '../components/BottomNav';
 import { BG_BASE, BG_MID, BG_SURFACE } from '../../constants/tokens';
 import { AIMessageBubble, UserMessageBubble } from '../components/chat/MessageBubble';
 import { ThinkingIndicator } from '../components/chat/ThinkingIndicator';
@@ -352,9 +352,15 @@ export default function ChatScreen() {
   const handleCancelEdit = useCallback(() => { setEditingMessage(null); setInputValue(''); }, [setInputValue]);
 
   const canSend = inputValue.trim().length > 0 && !(isLoading && !editingMessage);
+  const handleBackPress = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/');
+  }, [router]);
 
-  const bottomNavReserve = 56 + Math.max(insets.bottom, 16) + 12;
-  const inputPaddingBottom = bottomNavReserve;
+  const inputPaddingBottom = Math.max(insets.bottom, 12) + 10;
 
   return (
     <View style={styles.root}>
@@ -381,12 +387,12 @@ export default function ChatScreen() {
           <View style={styles.header}>
             <View style={styles.headerFallback} />
             <View style={styles.headerContent}>
-              <GlassButton onPress={() => router.back()} style={styles.headerButton} accessibilityLabel="Go back">
+              <GlassButton onPress={handleBackPress} style={styles.headerButton} accessibilityLabel="Go back">
                 <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
                   <Path d="M15 18l-6-6 6-6" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                 </Svg>
               </GlassButton>
-              <Text style={styles.headerTitle} numberOfLines={1}>90Plus AI</Text>
+              <Text style={styles.headerTitle} numberOfLines={1}>90Plus Assistant</Text>
               <GlassButton onPress={() => setIsPanelOpen(true)} style={styles.headerButton} accessibilityLabel="Open conversations">
                 <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
                   <Path d="M3 12h18M3 6h18M3 18h18" stroke="white" strokeWidth={2} strokeLinecap="round" />
@@ -434,10 +440,24 @@ export default function ChatScreen() {
             </>
           ) : (
             <ScrollView style={styles.welcomeScroll} contentContainerStyle={[styles.welcomeContent, { paddingTop: Spacing.xl }]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <View style={styles.welcomeHero}>
+              <ImageBackground
+                source={{ uri: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80' }}
+                style={styles.welcomeHero}
+                imageStyle={styles.welcomeHeroImage}
+              >
+                <LinearGradient
+                  colors={['rgba(7,5,14,0.2)', 'rgba(8,6,16,0.62)', 'rgba(8,6,16,0.95)']}
+                  start={{ x: 0.1, y: 0 }}
+                  end={{ x: 0.8, y: 1 }}
+                  style={StyleSheet.absoluteFill}
+                />
+                <View style={styles.welcomeBadge}>
+                  <MessageCircle size={14} color={Colors.purpleSoft} strokeWidth={2.2} />
+                  <Text style={styles.welcomeBadgeText}>90PLUS AI</Text>
+                </View>
                 <Text style={styles.welcomeTitle}>Hey there!</Text>
                 <Text style={styles.welcomeSubtitle}>What would you like to know?</Text>
-              </View>
+              </ImageBackground>
               <View style={styles.welcomeChips}>
                 {QUICK_CHIPS.map((c) => (
                   <ChipButton key={c.text} text={c.text} onPress={() => handleChipPress(c.text)} />
@@ -478,19 +498,26 @@ export default function ChatScreen() {
                     </Pressable>
                   </Animated.View>
                 )}
-                <View style={[styles.inputRow, { minHeight: Math.min(Math.max(inputHeight, 52), 120) }]}>
-                  <LinearGradient colors={['rgba(255,255,255,0.09)', 'rgba(124,58,237,0.06)', 'rgba(255,255,255,0.03)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.full }]} pointerEvents="none" />
-                  <TextInput
-                    ref={inputRef}
-                    style={styles.textInput}
-                    value={inputValue} onChangeText={setInputValue}
-                    placeholder={editingMessage ? 'Edit your message…' : 'Ask 90Plus AI …'}
-                    placeholderTextColor={Colors.textDisabled}
-                    multiline maxLength={2000} textAlign="left"
-                    editable={!(isLoading && !editingMessage)}
-                    returnKeyType="default" blurOnSubmit={false}
-                    onContentSizeChange={(e) => { const h = e.nativeEvent.contentSize.height; setInputHeight(Math.min(Math.max(h + 16, 52), 120)); }}
-                  />
+                <View style={[styles.inputRow, { minHeight: Math.min(Math.max(inputHeight, 56), 64) }]}>
+                  <View style={styles.inputFieldWrap}>
+                    <TextInput
+                      ref={inputRef}
+                      style={styles.textInput}
+                      value={inputValue}
+                      onChangeText={setInputValue}
+                      placeholder={editingMessage ? 'Edit your message…' : 'Ask 90Plus AI ...'}
+                      placeholderTextColor={Colors.textDisabled}
+                      multiline={false}
+                      maxLength={2000}
+                      textAlign="left"
+                      editable={!(isLoading && !editingMessage)}
+                      returnKeyType="send"
+                      blurOnSubmit={false}
+                      underlineColorAndroid="transparent"
+                      selectionColor="rgba(167,139,250,0.9)"
+                      onSubmitEditing={handleSend}
+                    />
+                  </View>
                   {isLoading && !editingMessage ? (
                     <Pressable onPress={stopGeneration} style={styles.stopButton}>
                       <LinearGradient colors={Gradients.stopButton} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.actionButtonGradient}><SpinnerRing /></LinearGradient>
@@ -518,7 +545,6 @@ export default function ChatScreen() {
         </KeyboardAvoidingView>
       </SafeAreaView>
 
-      <BottomNav />
     </View>
   );
 }
@@ -530,13 +556,11 @@ const styles = StyleSheet.create({
   safeArea:     { flex: 1 },
   keyboardView: { flex: 1 },
 
-  orb: { position: 'absolute' },
-
   header:         { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50, overflow: 'hidden', borderBottomWidth: 0.5, borderBottomColor: Colors.white10 },
   headerFallback: { ...StyleSheet.absoluteFillObject, backgroundColor: Colors.surfaceDark },
-  headerContent:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, height: 60 },
+  headerContent:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, height: 56 },
   headerButton:   { width: 40, height: 40, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  headerTitle:    { fontSize: FontSize['md+'], fontWeight: '700', color: Colors.white90, letterSpacing: -0.2 },
+  headerTitle:    { fontSize: FontSize.md, fontWeight: '800', color: Colors.white90, letterSpacing: 0.1 },
 
   mainBelowHeader: { flex: 1, paddingTop: Layout.headerHeight },
 
@@ -544,23 +568,26 @@ const styles = StyleSheet.create({
   glassButtonFallback: { ...StyleSheet.absoluteFillObject, backgroundColor: Colors.surfaceGlass },
 
   messagesList:    { flex: 1 },
-  messagesContent: { paddingHorizontal: Spacing.xs, gap: Spacing.xs },
+  messagesContent: { paddingHorizontal: Spacing.sm, gap: Spacing.xs },
 
   welcomeScroll:   { flex: 1 },
   welcomeContent:  { flexGrow: 1, paddingHorizontal: Spacing.lg, paddingBottom: Spacing['4xl'], alignItems: 'center', justifyContent: 'center' },
-  welcomeHero:     { alignItems: 'center', width: '100%', marginBottom: Spacing.xl },
-  welcomeTitle:    { fontSize: FontSize['5xl'], fontWeight: '700', color: Colors.white, lineHeight: 32, textAlign: 'center' },
-  welcomeSubtitle: { fontSize: FontSize['3xl'], fontWeight: '500', color: Colors.white60, lineHeight: 28, marginBottom: Spacing.md, textAlign: 'center' },
+  welcomeHero:     { alignItems: 'center', justifyContent: 'flex-end', width: '100%', minHeight: 260, marginBottom: Spacing.xl, borderRadius: Radius['2xl'], borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)', overflow: 'hidden', paddingVertical: Spacing.xl, paddingHorizontal: Spacing.lg },
+  welcomeHeroImage:{ opacity: 0.9 },
+  welcomeBadge:    { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, paddingHorizontal: 10, paddingVertical: 5, borderRadius: Radius.full, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 0.5, borderColor: 'rgba(167,139,250,0.35)' },
+  welcomeBadgeText:{ fontSize: FontSize['2xs'], fontWeight: '800', letterSpacing: 0.8, color: Colors.purpleSoft },
+  welcomeTitle:    { fontSize: FontSize['2xl'], fontWeight: '700', color: Colors.white, lineHeight: 28, textAlign: 'center' },
+  welcomeSubtitle: { fontSize: FontSize.md, fontWeight: '500', color: Colors.white60, lineHeight: 22, marginBottom: Spacing.md, textAlign: 'center', maxWidth: 260 },
   welcomeChips:    { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, justifyContent: 'center', width: '100%' },
 
-  chip:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.md + 2, paddingVertical: Spacing.sm, borderRadius: Radius.full, backgroundColor: Colors.white08, borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.14)' },
+  chip:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.md + 2, paddingVertical: Spacing.sm, borderRadius: Radius.full, backgroundColor: 'rgba(16,13,25,0.94)', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.16)' },
   chipText: { fontSize: FontSize.sm, color: Colors.white80, fontWeight: '600' },
 
   inputBar: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.sm,
     overflow: 'hidden',
-    backgroundColor: 'rgba(6,3,8,0.97)',
+    backgroundColor: 'rgba(5,3,8,0.98)',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(255,255,255,0.08)',
   },
@@ -571,11 +598,12 @@ const styles = StyleSheet.create({
   editIndicatorText:  { fontSize: FontSize.sm, color: Colors.white70 },
   editCancelButton:   { padding: Spacing.xs },
 
-  inputRow:              { flexDirection: 'row', alignItems: 'flex-end', gap: Spacing.xs, backgroundColor: 'transparent', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: Radius.full, paddingLeft: Spacing.xs + 2, paddingRight: Spacing.xs + 2, paddingVertical: Spacing.xs + 2, minHeight: 52, overflow: 'hidden', shadowColor: Colors.purplePrimary, shadowOffset: { width: 0, height: 0 }, shadowRadius: 14, shadowOpacity: 0.18, elevation: 4 },
-  textInput:             { flex: 1, fontSize: FontSize.lg, color: Colors.white, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, maxHeight: 120, textAlign: 'left' },
+  inputRow:              { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, backgroundColor: 'rgba(13,10,20,0.96)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: Radius.full, paddingLeft: 8, paddingRight: 5, paddingVertical: 5, minHeight: 56, overflow: 'hidden' },
+  inputFieldWrap:        { flex: 1, height: 44, borderRadius: Radius.full, justifyContent: 'center', overflow: 'hidden' },
+  textInput:             { flex: 1, fontSize: FontSize.md, color: Colors.white, paddingHorizontal: Spacing.md, paddingVertical: 0, textAlign: 'left', borderWidth: 0, backgroundColor: 'transparent', includeFontPadding: false, outlineStyle: 'none' as const },
   sendButtonWrapper:     { borderRadius: Radius.full, overflow: 'hidden' },
   stopButton:            { borderRadius: Radius.full, overflow: 'hidden' },
-  actionButtonGradient:  { width: 40, height: 40, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center' },
+  actionButtonGradient:  { width: 44, height: 44, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center' },
   sendButtonDisabled:    { backgroundColor: Colors.white08 },
 
   spinnerContainer: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
@@ -588,7 +616,7 @@ const styles = StyleSheet.create({
   limitBarLabel:    { fontSize: FontSize.sm, color: Colors.textMuted },
   limitBarCountdown:{ fontSize: FontSize['5xl'], fontWeight: '300', color: Colors.white50, letterSpacing: 1 },
 
-  poweredBy:     { fontSize: FontSize['2xs'], color: Colors.white20, textAlign: 'center', letterSpacing: 1.5, marginTop: Spacing.xs + 2 },
+  poweredBy:     { fontSize: FontSize['2xs'], color: Colors.white20, textAlign: 'center', letterSpacing: 1, marginTop: Spacing.xs + 2 },
 
   panelBackdrop:   { backgroundColor: Colors.overlayDark, zIndex: 40 },
   panel:           { position: 'absolute', top: 0, left: 0, bottom: 0, zIndex: 50, overflow: 'hidden', borderRightWidth: 0.5, borderRightColor: Colors.white10 },

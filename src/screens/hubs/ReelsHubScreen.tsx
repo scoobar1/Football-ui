@@ -4,6 +4,8 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  ImageBackground,
+  ScrollView,
   Dimensions,
   StyleSheet,
 } from 'react-native';
@@ -26,10 +28,10 @@ const { width } = Dimensions.get('window');
 const CELL = (width - SCREEN_PADDING_H * 2 - 10) / 2;
 
 const ITEMS = [
-  { title: 'Skills of the week', views: '1.8M', img: 'https://images.unsplash.com/photo-1657957746418-6a38df9e1ea7?w=400' },
-  { title: 'Strikes from distance', views: '920K', img: 'https://images.unsplash.com/photo-1705593973313-75de7bf95b56?w=400' },
-  { title: 'Post-match vibes', views: '2.4M', img: 'https://images.unsplash.com/photo-1710788617743-8b9ed4143325?w=400' },
-  { title: 'Tactical snapshots', views: '640K', img: 'https://images.unsplash.com/photo-1763656812756-3539efd3e301?w=400' },
+  { title: 'Skills of the week', views: '1.8M', img: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=900&q=80' },
+  { title: 'Strikes from distance', views: '920K', img: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=900&q=80' },
+  { title: 'Post-match vibes', views: '2.4M', img: 'https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=900&q=80' },
+  { title: 'Tactical snapshots', views: '640K', img: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&w=900&q=80' },
 ];
 
 const TAGS = ['All', 'Highlights', 'Skills', 'Fun', 'Analysis'];
@@ -42,25 +44,34 @@ export default function ReelsHubScreen() {
       title="Reels arena"
       subtitle="Short clips in a tight grid — highlights lane matches your tab accent."
     >
-      <View style={styles.hero}>
+      <ImageBackground
+        source={{ uri: 'https://images.unsplash.com/photo-1624880357913-a8539238245b?auto=format&fit=crop&w=1400&q=80' }}
+        style={styles.hero}
+        imageStyle={styles.heroImage}
+      >
         <LinearGradient
-          colors={[...GRADIENT_HERO_REELS]}
+          colors={['rgba(7,5,13,0.45)', 'rgba(8,6,15,0.82)', 'rgba(8,6,15,0.98)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
         <View style={styles.heroRow}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.heroEyebrow}>Feed desk</Text>
-            <Text style={styles.heroTitle}>Curated reels · demo grid</Text>
+            <Text style={styles.heroTitle}>Curated reels for your style</Text>
+            <Text style={styles.heroSub}>Fresh football clips, clean grid, instant watch.</Text>
           </View>
           <View style={styles.heroOrb}>
             <Play size={18} color={TAB_COLORS.Highlights} strokeWidth={2.4} fill={`${TAB_COLORS.Highlights}33`} />
           </View>
         </View>
-      </View>
+      </ImageBackground>
 
-      <View style={styles.tagRow}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tagRow}
+      >
         {TAGS.map((t) => {
           const on = t === tag;
           return (
@@ -82,7 +93,7 @@ export default function ReelsHubScreen() {
             </TouchableOpacity>
           );
         })}
-      </View>
+      </ScrollView>
 
       <View style={styles.grid}>
         {ITEMS.map((it, i) => (
@@ -106,24 +117,35 @@ export default function ReelsHubScreen() {
 }
 
 function Overlay() {
-  return <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.28)' }]} />;
+  return (
+    <LinearGradient
+      colors={['rgba(0,0,0,0.08)', 'rgba(0,0,0,0.24)', 'rgba(0,0,0,0.44)']}
+      style={StyleSheet.absoluteFill}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
   hero: {
-    marginHorizontal: -SCREEN_PADDING_H,
     marginBottom: 16,
-    paddingHorizontal: SCREEN_PADDING_H,
-    paddingVertical: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     borderRadius: RADIUS_LG,
     overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: BORDER_ARENA,
+    minHeight: 118,
+  },
+  heroImage: {
+    opacity: 0.95,
   },
   heroRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: 12,
   },
   heroEyebrow: {
     color: TEXT_MUTED,
@@ -134,10 +156,16 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     marginTop: 6,
-    fontSize: 17,
+    fontSize: 19,
     fontWeight: '800',
     color: TEXT_PRIMARY,
     letterSpacing: -0.35,
+  },
+  heroSub: {
+    marginTop: 6,
+    color: TEXT_MUTED,
+    fontSize: 12,
+    fontWeight: '600',
   },
   heroOrb: {
     width: 44,
@@ -152,9 +180,9 @@ const styles = StyleSheet.create({
 
   tagRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 8,
     marginBottom: 14,
+    paddingRight: 6,
   },
   tag: {
     paddingHorizontal: 13,
@@ -183,19 +211,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 2,
     backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: BORDER_ARENA,
   },
   img: { ...StyleSheet.absoluteFillObject },
   playCircle: {
     position: 'absolute',
-    top: '42%',
-    left: '40%',
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    borderWidth: StyleSheet.hairlineWidth,
+    top: '41%',
+    left: '39%',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(5,5,12,0.62)',
+    borderWidth: 1,
     borderColor: BORDER_ARENA_STRONG,
     alignItems: 'center',
     justifyContent: 'center',
