@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronLeft, Circle, CircleCheck, Lightbulb, Bookmark, ArrowRight, Clock3, Zap } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -104,11 +104,6 @@ export default function QuizHubScreen() {
               end={{ x: 1, y: 1 }}
             />
             <Text style={styles.questionTitle}>Which player has won the most Ballon d'Or awards?</Text>
-            <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=700&q=80' }}
-              style={styles.questionImage}
-              resizeMode="cover"
-            />
           </View>
 
           {optionRows.map((opt) => {
@@ -338,16 +333,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '800',
     lineHeight: 27,
-    maxWidth: '68%',
-  },
-  questionImage: {
-    position: 'absolute',
-    right: 8,
-    bottom: 6,
-    width: 132,
-    height: 132,
-    borderRadius: 66,
-    opacity: 0.9,
+    maxWidth: '100%',
   },
   optionRow: {
     minHeight: 62,
