@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { QuizPopup } from '../src/components/common/QuizPopup';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -26,6 +27,9 @@ export default function RootLayout() {
         <Stack.Screen name="chat" options={{ animation: 'fade' }} />
       </Stack>
       <StatusBar style="auto" />
+      
+      {/* Global Quiz Popup - Shows once per session */}
+      <QuizPopup initialDelay={10000} />
     </ThemeProvider>
   );
 }

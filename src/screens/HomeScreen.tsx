@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, useWindowDimensions, RefreshControl } from 'react-native';
+import { View, ScrollView, StyleSheet, useWindowDimensions, RefreshControl, TouchableOpacity, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Animated, {
   useSharedValue, withRepeat, withTiming, useAnimatedStyle,
   withDelay, Easing,
@@ -92,6 +94,7 @@ function AmbientGlow() {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
   const NAV_BOTTOM_PADDING = Math.max(insets.bottom, 16) + 56 + 24;
   const headerOffset = insets.top + HOME_HEADER_BODY_HEIGHT + 2;
@@ -140,6 +143,7 @@ export default function HomeScreen() {
         <ScreenSection>
           <HomeHero />
         </ScreenSection>
+        
         <ScreenSection>
           <HomeMatchesBlock />
         </ScreenSection>
