@@ -45,7 +45,13 @@ export function AuthScreenShell({ heroMode = 'full', children, panelOffset }: Pr
           style={styles.bgimg}
           imageStyle={styles.bgimgAsset}
           resizeMode="cover"
-        />
+        >
+          <LinearGradient
+            colors={['rgba(11,11,21,0.15)', 'rgba(11,11,21,0.55)', 'rgba(6,5,14,1)']}
+            locations={[0, 0.45, 1]}
+            style={StyleSheet.absoluteFill}
+          />
+        </ImageBackground>
       </View>
 
       <Pressable 
@@ -82,6 +88,7 @@ export function AuthScreenShell({ heroMode = 'full', children, panelOffset }: Pr
             { paddingBottom: Math.max(insets.bottom, 20) },
           ]}
         >
+
           {heroMode !== 'none' ? (
             <AuthHeroBlock compact={heroMode === 'compact'} />
           ) : (
@@ -134,7 +141,7 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 52 },
   close: {
     position: 'absolute',
-    left: 20,
+    right: 20,
     zIndex: 10,
     width: 44,
     height: 44,
