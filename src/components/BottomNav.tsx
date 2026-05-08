@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { prefetchRoute, prefetchRoutes } from '../../utils/routePrefetcher';
 import { TAB_COLORS } from '../../constants/tokens';
+import { isLiquidGlassSupported, LiquidGlassView } from '@callstack/liquid-glass';
 
 const { width } = Dimensions.get('window');
 
@@ -75,7 +76,6 @@ const BottomNav = () => {
   const tabs: { name: TabName; icon: typeof Home | null; customIcon?: boolean; aiIcon?: boolean; route: AppRoute }[] = [
     { name: 'Home',       icon: Home,      route: '/home' },
     { name: 'Leagues',    icon: null,      customIcon: true, route: '/matches' },
-    { name: 'Quiz',       icon: Brain,     route: '/quiz' },
     { name: 'AI',         icon: null,      aiIcon: true, route: '/chat' },
     { name: 'Profile',    icon: User,      route: '/profile' },
     { name: 'Highlights', icon: Video,     route: '/reels' },
@@ -96,6 +96,12 @@ const BottomNav = () => {
       : isProfileStack
       ? 'Profile'
       : (tabs.find(tab => pathname === tab.route || pathname?.toLowerCase() === tab.route)?.name ?? 'Home');
+
+  const glassProps = isLiquidGlassSupported
+    ? { effect: "clear" as const, interactive: true }
+    : { intensity: 20, tint: "dark" as const };
+
+  const GlassWrapper = isLiquidGlassSupported ? LiquidGlassView : BlurView;
 
   useEffect(() => {
     const allRoutes = tabs.map(tab => tab.route);
@@ -125,18 +131,15 @@ const BottomNav = () => {
   return (
     <View style={[styles.container, { bottom: Math.max(insets.bottom, 16) }]}>
       <View style={styles.navWrapper}>
+        <GlassWrapper {...(glassProps as any)} style={StyleSheet.absoluteFill} />
+
         {/* Top gradient border — blue→purple */}
         <LinearGradient
-          colors={['transparent', 'rgba(59,130,246,0.25)', 'rgba(124,58,237,0.35)', 'transparent']}
+          colors={['transparent', 'rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0)', 'transparent']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.topBorder}
         />
-
-        {/* Background blur — allowed in nav per steering rules */}
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
-        {/* Mandatory fallback */}
-        <View style={styles.darkOverlay} />
 
         {/* Navigation items */}
         <View style={styles.navItemsContainer}>
@@ -240,6 +243,9 @@ const styles = StyleSheet.create({
     width: NAV_WIDTH, height: NAV_HEIGHT,
     borderRadius: NAV_HEIGHT / 2,
     overflow: 'hidden',
+    backgroundColor: 'rgba(20, 18, 28, 0.00)', // Semi-transparent glass base
+    borderWidth: 1,
+    borderColor: 'rgba(75, 0, 105, 0.47)', // Subtle glass border
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4, shadowRadius: 16, elevation: 20,
@@ -247,17 +253,15 @@ const styles = StyleSheet.create({
   topBorder: {
     position: 'absolute',
     top: 0, left: 0, right: 0,
-    height: 1,
+    height: 1.5,
     zIndex: 10,
-  },
-  darkOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(20,18,28,0.78)',
+    opacity: 0.6,
   },
   navItemsContainer: {
     flex: 1, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-around',
     paddingHorizontal: 8,
+    zIndex: 20,
   },
   navItem: {
     flex: 1, justifyContent: 'center', alignItems: 'center', height: '100%',

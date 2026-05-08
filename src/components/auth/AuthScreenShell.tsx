@@ -12,24 +12,27 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { X } from 'lucide-react-native';
+import { ChevronLeft, X } from 'lucide-react-native';
+import { BlurView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
 import { AuthHeroBlock } from './AuthHeroBlock';
 import { AUTH_PANEL_BG } from './AuthTokens';
 import { BG_BASE, TEXT_PRIMARY } from '../../../constants/tokens';
+import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 
 const HERO_IMG = require('../../../assets/images/auth-hero.png');
 
 type Props = {
   heroMode?: 'full' | 'compact' | 'none';
   children: React.ReactNode;
+  panelOffset?: number; // خاصية جديدة للتحكم في الإزاحة بشكل مستقل
 };
 
-export function AuthScreenShell({ heroMode = 'full', children }: Props) {
+export function AuthScreenShell({ heroMode = 'full', children, panelOffset }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
-  const imgH = Math.min(height * 0.42, 320);
+  const imgH = Math.min(height * 0.90,550);
   const shadowBandTop = Math.max(0, imgH - 72);
 
   return (
@@ -37,14 +40,29 @@ export function AuthScreenShell({ heroMode = 'full', children }: Props) {
       <StatusBar style="light" />
 
       <View style={[styles.photoSlot, { height: imgH }]}>
-        <ImageBackground source={HERO_IMG} style={styles.bgimg} resizeMode="cover">
-          <LinearGradient
-            colors={['rgba(11,11,21,0.15)', 'rgba(11,11,21,0.55)', 'rgba(6,5,14,1)']}
-            locations={[0, 0.45, 1]}
-            style={StyleSheet.absoluteFill}
-          />
-        </ImageBackground>
+        <ImageBackground
+          source={HERO_IMG}
+          style={styles.bgimg}
+          imageStyle={styles.bgimgAsset}
+          resizeMode="cover"
+        />
       </View>
+
+      <Pressable 
+        style={[styles.close, { top: Math.max(insets.top, 20) + 10, left: 20 }]} 
+        onPress={() => {
+          if (router.canGoBack()) {
+            router.back();
+          } else {
+            router.replace('/');
+          }
+        }}
+      >
+        <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
+        <View style={styles.closeInner}>
+          <X color="#fff" size={20} strokeWidth={1.5} />
+        </View>
+      </Pressable>
 
       <LinearGradient
         colors={[`${BG_BASE}00`, BG_BASE]}
@@ -64,27 +82,36 @@ export function AuthScreenShell({ heroMode = 'full', children }: Props) {
             { paddingBottom: Math.max(insets.bottom, 20) },
           ]}
         >
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Close"
-            onPress={() => (router.canGoBack() ? router.back() : router.replace('/home'))}
-            hitSlop={16}
-            style={[styles.close, { top: Math.max(insets.top, 8) }]}
-          >
-            <View style={styles.closeInner}>
-              <X color={TEXT_PRIMARY} size={20} strokeWidth={2} />
-            </View>
-          </Pressable>
-
           {heroMode !== 'none' ? (
             <AuthHeroBlock compact={heroMode === 'compact'} />
           ) : (
             <View style={{ height: 8 }} />
           )}
 
-          <View style={[styles.panel, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-            {children}
-          </View>
+          {isLiquidGlassSupported ? (
+            <LiquidGlassView
+              effect="regular"
+              colorScheme="dark"
+              style={[
+                styles.panel,
+                { paddingBottom: Math.max(insets.bottom, 16) },
+                panelOffset !== undefined ? { marginTop: panelOffset } : null,
+              ]}
+            >
+              {children}
+            </LiquidGlassView>
+          ) : (
+            <View
+              style={[
+                styles.panel,
+                { paddingBottom: Math.max(insets.bottom, 16) },
+                panelOffset !== undefined ? { marginTop: panelOffset } : null,
+              ]}
+            >
+              <BlurView intensity={10} tint="dark" style={StyleSheet.absoluteFill} />
+              {children}
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -93,8 +120,9 @@ export function AuthScreenShell({ heroMode = 'full', children }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: BG_BASE },
-  photoSlot: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 0 },
+  photoSlot: { position: 'absolute', top: 5, left: 0, right: 0, zIndex: 0 },
   bgimg: { flex: 1, width: '100%', height: '100%' },
+  bgimgAsset: { height: '108%', transform: [{ translateY: -28}, { translateX:-5}] },
   shadowBand: {
     position: 'absolute',
     left: 0,
@@ -108,20 +136,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 20,
     zIndex: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
   },
   closeInner: { justifyContent: 'center', alignItems: 'center' },
   panel: {
     flex: 1,
-    marginTop: 12,
-    backgroundColor: AUTH_PANEL_BG,
+    marginTop: -55, // رفعة متوازنة لتلتقي مع الأيقونات بدون تداخل مع النصوص
+    backgroundColor: 'transparent',
+    overflow: 'hidden',
     borderRadius: 20,
     borderTopLeftRadius: 22,
     borderTopRightRadius: 22,

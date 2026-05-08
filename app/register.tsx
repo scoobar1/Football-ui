@@ -40,7 +40,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <AuthScreenShell heroMode="full">
+    <AuthScreenShell heroMode="full" panelOffset={-55}>
       <AuthTextField
         icon={CircleUserRound}
         placeholder="Full Name"
@@ -79,7 +79,7 @@ export default function RegisterScreen() {
           {terms ? <Text style={styles.chkMark}>✓</Text> : null}
         </TouchableOpacity>
         <Text style={styles.termsTxt}>
-          I agree to the <Text style={styles.link}>Terms & Conditions</Text>
+          I agree to the <Text style={styles.link}>Terms and Conditions</Text>
         </Text>
       </View>
 
@@ -128,7 +128,7 @@ function Divider() {
 
 const styles = StyleSheet.create({
   gapTop: { marginTop: 12 },
-  termsWrap: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 18, gap: 10 },
+  termsWrap: { flexDirection: 'row', alignItems: 'center', marginTop: 18, gap: 10 },
   chk: {
     width: 22,
     height: 22,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   socialTxt: { fontSize: 14, fontWeight: '700', color: TEXT_SECONDARY },
 
-  footer: { marginTop: 20, alignItems: 'center', paddingBottom: 12 },
+  footer: { marginTop: 5, alignItems: 'center', paddingBottom: 12 },
   footerMuted: { fontSize: 14, color: TEXT_MUTED },
   linkBold: { color: AUTH_ACCENT, fontWeight: '800' },
 });

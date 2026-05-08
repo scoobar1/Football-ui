@@ -32,7 +32,8 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Message } from '../../hooks/useAIChatNative';
+import { BlurView } from 'expo-blur';
+import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 import {
   Colors,
   Radius,
@@ -40,8 +41,11 @@ import {
   LineHeight,
   Spacing,
   Gradients,
+  BlurIntensity,
+  Layout,
 } from '../../../constants/theme';
 import { MessageContextMenu } from '../chat/MessageContextMenu';
+import { Message } from '@/src/hooks/useAIChatNative';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -81,7 +85,7 @@ function extractTableBlock(
   startIndex: number,
 ): { block: TableBlock; endIndex: number } | null {
   if (startIndex + 1 >= lines.length) return null;
-  const headerLine    = lines[startIndex];
+  const headerLine = lines[startIndex];
   const separatorLine = lines[startIndex + 1];
 
   if (
@@ -299,8 +303,18 @@ const WaveDot = React.memo(function WaveDot({ delay }: { delay: number }) {
 export const TypingIndicator = React.memo(function TypingIndicator() {
   return (
     <Animated.View entering={FadeIn.duration(300)} style={styles.aiRow}>
-      <View style={styles.typingBubbleWrapper}>
-        <View style={styles.aiBubbleFallback} />
+      <View style={styles.aiBubbleOuter}>
+        {isLiquidGlassSupported ? (
+          <LiquidGlassView
+            {...({
+              style: StyleSheet.absoluteFill,
+              tint: "rgba(30,15,50,0.72)",
+              effect: "clear"
+            } as any)}
+          />
+        ) : (
+          <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
+        )}
         <View style={styles.typingDots}>
           {([0, 150, 300] as const).map((delay, i) => (
             <WaveDot key={i} delay={delay} />
@@ -318,15 +332,15 @@ export const AIMessageBubble = React.memo(function AIMessageBubble({
   index = 0,
 }: MessageBubbleProps) {
   // Reset cached stream when the message id changes.
-  const initialTextRef  = useRef<string | null>(null);
-  const prevMessageId   = useRef<string | null>(null);
+  const initialTextRef = useRef<string | null>(null);
+  const prevMessageId = useRef<string | null>(null);
 
   const [visibleText, setVisibleText] = useState('');
-  const [typingDone, setTypingDone]   = useState(false);
+  const [typingDone, setTypingDone] = useState(false);
 
   // Timestamp fade on tap
   const timestampOpacity = useSharedValue(0);
-  const timestampStyle   = useAnimatedStyle(() => ({ opacity: timestampOpacity.value }));
+  const timestampStyle = useAnimatedStyle(() => ({ opacity: timestampOpacity.value }));
 
   const handleBubblePress = useCallback(() => {
     timestampOpacity.value = withTiming(1, { duration: 200 });
@@ -339,7 +353,7 @@ export const AIMessageBubble = React.memo(function AIMessageBubble({
 
     // Reset ref لما message.id يتغير
     if (prevMessageId.current !== message.id) {
-      prevMessageId.current  = message.id;
+      prevMessageId.current = message.id;
       initialTextRef.current = null;
     }
 
@@ -363,9 +377,9 @@ export const AIMessageBubble = React.memo(function AIMessageBubble({
       return () => { mounted = false; };
     }
 
-    let charIndex  = 0;
-    const textLen  = fullText.length;
-    const step     = textLen > 1000 ? 6 : textLen > 500 ? 4 : 2;
+    let charIndex = 0;
+    const textLen = fullText.length;
+    const step = textLen > 1000 ? 6 : textLen > 500 ? 4 : 2;
     const interval = textLen > 1000 ? 8 : 14;
 
     const timer = setInterval(() => {
@@ -384,10 +398,10 @@ export const AIMessageBubble = React.memo(function AIMessageBubble({
     };
   }, [message.id]); // message.id فقط — مقصود
 
-  const displayText      = typingDone ? (message.text ?? '') : visibleText;
-  const isStreaming      = initialTextRef.current === '' && message.text !== '' && !typingDone;
-  const showCursor       = isStreaming || (!typingDone && initialTextRef.current !== '');
-  const renderedContent  = useMemo(() => renderStructuredContent(displayText), [displayText]);
+  const displayText = typingDone ? (message.text ?? '') : visibleText;
+  const isStreaming = initialTextRef.current === '' && message.text !== '' && !typingDone;
+  const showCursor = isStreaming || (!typingDone && initialTextRef.current !== '');
+  const renderedContent = useMemo(() => renderStructuredContent(displayText), [displayText]);
 
   return (
     <Animated.View
@@ -405,25 +419,24 @@ export const AIMessageBubble = React.memo(function AIMessageBubble({
           accessibilityRole="text"
           accessibilityLabel={`AI message: ${displayText}`}
         >
-          <View style={styles.aiBubbleWrapper}>
-            <View style={styles.aiBubbleFallback} />
-            {/* Gradient overlay */}
+          <View style={styles.aiBubbleOuter}>
+            {isLiquidGlassSupported ? (
+              <LiquidGlassView
+                {...({
+                  style: StyleSheet.absoluteFill,
+                  tint: "rgba(30,15,50,0.72)",
+                  effect: "clear"
+                } as any)}
+              />
+            ) : (
+              <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
+            )}
             <LinearGradient
-              colors={['rgba(124,58,237,0.18)', 'rgba(76,29,149,0.12)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+              colors={['rgba(168,85,247,0.08)', 'transparent']}
+              start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
               style={StyleSheet.absoluteFill}
+              pointerEvents="none"
             />
-            {/* Diagonal shimmer sheen */}
-            <LinearGradient
-              colors={['transparent', 'rgba(255,255,255,0.015)', 'transparent']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={StyleSheet.absoluteFill}
-            />
-            {/* Inset top highlight */}
-            <View style={styles.aiBubbleInsetHighlight} />
-            {/* Content */}
             <View style={styles.aiBubbleContent}>
               <View style={styles.textContent}>
                 {renderedContent}
@@ -459,7 +472,7 @@ export const UserMessageBubble = React.memo(function UserMessageBubble({
 
   // Timestamp fade on tap
   const timestampOpacity = useSharedValue(0);
-  const timestampStyle   = useAnimatedStyle(() => ({ opacity: timestampOpacity.value }));
+  const timestampStyle = useAnimatedStyle(() => ({ opacity: timestampOpacity.value }));
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -526,14 +539,15 @@ export const UserMessageBubble = React.memo(function UserMessageBubble({
             accessibilityRole="text"
             accessibilityLabel={`Your message: ${message.text}`}
           >
-            <LinearGradient
-              colors={Gradients.userBubble}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.userBubble}
-            >
+            <View style={styles.userBubbleOuter}>
+              <LinearGradient
+                colors={['rgba(124,58,237,0.55)', 'rgba(91,33,182,0.45)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
               <Text style={styles.userText}>{message.text}</Text>
-            </LinearGradient>
+            </View>
           </AnimatedPressable>
 
           {/* Timestamp — يظهر عند الضغط فقط */}
@@ -572,30 +586,16 @@ const styles = StyleSheet.create({
   aiMaxWidth: {
     maxWidth: '85%',
   },
-  aiBubbleWrapper: {
-    borderRadius: Radius.bubble,
-    borderBottomRightRadius: Radius.bubbleTailAI,
-    overflow: 'hidden',
+  aiBubbleOuter: {
+    borderRadius: 18,
     borderWidth: 0.5,
-    borderColor: Colors.aiBubbleBorder,
-  },
-  aiBubbleFallback: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(13,10,20,0.6)',
-  },
-  aiBubbleInsetHighlight: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderTopLeftRadius: Radius.bubble,
-    borderTopRightRadius: Radius.bubble,
+    borderColor: 'rgba(168,85,247,0.22)',
+    overflow: 'hidden',
+    maxWidth: '82%',
   },
   aiBubbleContent: {
-    paddingHorizontal: Spacing.base,
-    paddingVertical: Spacing.md,
+    padding: Spacing.base,
+    zIndex: 1,
   },
   textContent: {
     gap: Spacing.xs / 2,
@@ -619,19 +619,21 @@ const styles = StyleSheet.create({
   userMaxWidth: {
     maxWidth: '75%',
   },
-  userBubble: {
-    paddingHorizontal: Spacing.base,
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.bubble,
-    borderBottomLeftRadius: Radius.bubbleTailUser,
+  userBubbleOuter: {
+    borderRadius: 18,
+    borderWidth: 0.5,
+    borderColor: 'rgba(168,85,247,0.4)',
+    overflow: 'hidden',
+    maxWidth: '82%',
+    alignSelf: 'flex-end',
     ...Platform.select({
       ios: {
-        shadowColor: Colors.purplePrimary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
-        shadowRadius: 10,
+        shadowColor: '#7C3AED',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.35,
+        shadowRadius: 12,
       },
-      android: { elevation: 8 },
+      android: { elevation: 4 },
     }),
   },
   userText: {

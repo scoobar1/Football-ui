@@ -23,7 +23,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <AuthScreenShell heroMode="compact">
+    <AuthScreenShell heroMode="compact" panelOffset={60}>
       <Text style={styles.subMuted}>Sign in to keep your picks, alerts, and AI history in sync.</Text>
 
       <AuthTextField
@@ -87,13 +87,14 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   subMuted: {
-    marginTop: 4,
+    marginTop: 9,
     marginBottom: 20,
     fontSize: 14,
     color: TEXT_SECONDARY,
     lineHeight: 20,
     textAlign: 'left',
   },
+  title: { fontSize: 26, fontWeight: '800', color: TEXT_PRIMARY, textAlign: 'left', marginTop: -12 },
   mt: { marginTop: 4 },
   gap: { marginTop: 12 },
   forgot: { alignSelf: 'flex-end', marginTop: 10 },

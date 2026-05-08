@@ -1,158 +1,421 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
+import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
+import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bell, ChevronDown, ChevronRight, Menu, Crown, Shield } from 'lucide-react-native';
+import {
+  ChevronDown,
+  ChevronRight,
+  Trophy,
+  Zap,
+  Shield,
+  Star
+} from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import FifaCard from '../../components/rank/FifaCard';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomNav from '../../components/BottomNav';
-import { BG_BASE, BG_MID, BG_SURFACE, PURPLE_PRIMARY, TEXT_MUTED, TEXT_PRIMARY } from '../../../constants/tokens';
 
+// ─── Colors ───────────────────────────────────────────────────────────────────
+const BG = '#05010D';
+const CARD_BG1 = '#17112F';
+const CARD_BG2 = '#0A0818';
+const ACCENT = '#A855F7';
+const GOLD = '#FFD700';
+const SILVER = '#C0C0C0';
+const BRONZE = '#CD7F32';
+
+// ─── Data ─────────────────────────────────────────────────────────────────────
 const COMPETITIONS = [
-  { id: '1', title: 'King of Predictions', sub: 'Predict matches and be the best!' },
-  { id: '2', title: 'Share & Earn', sub: 'Share the app and climb the rankings!' },
-  { id: '3', title: 'Daily Quiz', sub: 'Answer daily questions and win points!' },
+  { id: '1', title: 'King of Predictions', sub: 'Predict matches and be the best!', img: require('../../../assets/images/football.png') },
+  { id: '2', title: 'Share & Earn', sub: 'Share the app and climb the rankings!', img: require('../../../assets/images/share.png') },
+  { id: '3', title: 'Daily Quiz', sub: 'Answer daily questions and win points!', img: require('../../../assets/images/daily-quiz.png') },
 ];
 
-const TOP_PLAYERS = [
-  { rank: '2', name: 'CR7_legend', xp: '11,230 XP', avatar: 'https://images.unsplash.com/photo-1543351611-58f69d5c1781?auto=format&fit=crop&w=200&q=75' },
-  { rank: '1', name: 'Mo Salah', xp: '12,850 XP', top: true, avatar: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=200&q=75' },
-  { rank: '3', name: 'The Goat', xp: '9,780 XP', avatar: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=200&q=75' },
+const PODIUM = [
+  { rank: 2, name: 'CR7_legend', xp: '11,230 XP', avatar: 'https://i.pravatar.cc/150?img=3' },
+  { rank: 1, name: 'mr.dev', xp: '12,850 XP', avatar: 'https://i.pravatar.cc/150?img=15' },
+  { rank: 3, name: 'The Goat', xp: '9,780 XP', avatar: 'https://i.pravatar.cc/150?img=8' },
 ];
 
+const LOWER = [
+  { rank: 4, name: 'NeymarJr', role: 'Pro Player', xp: '8,450 XP', avatar: 'https://i.pravatar.cc/150?img=5' },
+  { rank: 5, name: 'BlueLion', role: 'Rising Star', xp: '7,210 XP', avatar: 'https://i.pravatar.cc/150?img=9' },
+];
+
+// ─── Countdown ────────────────────────────────────────────────────────────────
+const WC_DATE = new Date('2026-06-11T00:00:00').getTime();
+function getTimeLeft() {
+  const diff = WC_DATE - Date.now();
+  if (diff <= 0) return { days: 0, hours: 0, mins: 0, secs: 0 };
+  return {
+    days: Math.floor(diff / 86400000),
+    hours: Math.floor((diff % 86400000) / 3600000),
+    mins: Math.floor((diff % 3600000) / 60000),
+    secs: Math.floor((diff % 60000) / 1000),
+  };
+}
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+function Header({ topInset }: { topInset: number }) {
+  const GlassContainer = isLiquidGlassSupported ? LiquidGlassView : BlurView;
+
+  return (
+    <GlassContainer
+      intensity={20}
+      tint="dark"
+      effect="regular"
+      style={[s.headerContainer, { paddingTop: topInset + 10 }]}
+    >
+      {/* Left: small 90 PLUS logo */}
+      <View style={s.logoPillSmall}>
+        <Text style={s.logo90Small}>90</Text>
+        <View style={s.plusChipSmall}>
+          <Text style={s.logoPlusSmall}>PLUS</Text>
+        </View>
+      </View>
+
+      {/* Right: coins */}
+      <View style={s.coinChip}>
+        <Zap size={13} color={ACCENT} fill={ACCENT} />
+        <Text style={s.coinTxt}>50</Text>
+      </View>
+    </GlassContainer>
+  );
+}
+
+// ─── Profile Card ─────────────────────────────────────────────────────────────
+function ProfileCard() {
+  const GlassContainer = isLiquidGlassSupported ? LiquidGlassView : BlurView;
+
+  return (
+    <GlassContainer
+      intensity={18}
+      tint="dark"
+      effect="clear"
+      interactive
+      style={s.profileCard}
+    >
+      <View style={s.profileCardOverlay} />
+
+      <View style={s.profileRow}>
+        {/* Avatar with purple ring */}
+        <View style={s.avatarWrap}>
+          <Image
+            source={{ uri: 'https://i.pravatar.cc/150?img=12' }}
+            style={s.avatar}
+          />
+          <View style={s.avatarRing} />
+        </View>
+
+        {/* Info */}
+        <View style={s.profileInfo}>
+          {/* Name + verified */}
+          <View style={s.nameRow}>
+            <Text style={s.username}>mr.dev</Text>
+            <View style={s.verifiedBadge}>
+              <Text style={s.verifiedTxt}>✓</Text>
+            </View>
+          </View>
+
+          {/* Level + XP bar */}
+          <View style={s.xpRow}>
+            <View style={s.lvlBadge}>
+              <Text style={s.lvlTxt}>Lv. 18</Text>
+            </View>
+            <View style={s.xpBarBg}>
+              <LinearGradient
+                colors={['#7C3AED', ACCENT]}
+                style={s.xpBarFill}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              />
+            </View>
+            <Text style={s.xpLabel}>
+              <Text style={s.xpCur}>2400</Text>
+              <Text style={s.xpMax}> / 3000 XP</Text>
+            </Text>
+          </View>
+        </View>
+      </View>
+    </GlassContainer>
+  );
+}
+
+// ─── Competition Card ─────────────────────────────────────────────────────────
+function CompCard({ img, title, sub }: { img: any; title: string; sub: string }) {
+  const CardWrapper = isLiquidGlassSupported ? LiquidGlassView : BlurView;
+  const wrapperProps = isLiquidGlassSupported
+    ? { effect: "clear" as const, interactive: true }
+    : { intensity: 12, tint: "dark" as const };
+
+  return (
+    <CardWrapper
+      {...(wrapperProps as any)}
+      style={s.compCard}
+    >
+      <View style={s.iconGlowAmbient} />
+      <View style={s.compIconArea}>
+        <Image source={img} style={s.compImg} resizeMode="contain" />
+      </View>
+      <Text style={s.compTitle}>{title}</Text>
+      <Text style={s.compSub}>{sub}</Text>
+      <View style={s.livePill}>
+        <View style={s.liveDot} />
+        <Text style={s.liveTxt}>Live Now</Text>
+      </View>
+    </CardWrapper>
+  );
+}
+
+// ─── World Cup Card ───────────────────────────────────────────────────────────
+function WCCard() {
+  const [t, setT] = useState(getTimeLeft());
+  useEffect(() => {
+    const id = setInterval(() => setT(getTimeLeft()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <LinearGradient
+      colors={['#1B103B', '#0A0818']}
+      style={s.wcCard}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      {/* Player silhouette — fills entire card */}
+      <Image
+        source={require('../../../assets/images/plear 90Plus.png')}
+        style={s.wcPlayerImg}
+        resizeMode="cover"
+      />
+
+      <View style={s.wcInner}>
+        {/* Left: text + button */}
+        <View style={s.wcLeft}>
+          <Text style={s.wcTitle}>Road To{'\n'}World Cup</Text>
+          <Text style={s.wcSub}>
+            Complete daily missions and earn{'\n'}points to reach the top!
+          </Text>
+          <TouchableOpacity style={s.wcBtn}>
+            <Text style={s.wcBtnTxt}>View Missions</Text>
+            <ChevronRight size={14} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Right: countdown - Liquid Glass */}
+        {isLiquidGlassSupported ? (
+          <LiquidGlassView effect="clear" interactive style={s.wcRight}>
+            <Text style={s.cdLabel}>World Cup starts in</Text>
+            <View style={s.cdRow}>
+              {[
+                { val: t.days, lbl: 'Days' },
+                { val: t.hours, lbl: 'Hours' },
+                { val: t.mins, lbl: 'Mins' },
+                { val: t.secs, lbl: 'Secs' },
+              ].map((item) => (
+                <View key={item.lbl} style={s.cdBlock}>
+                  <Text style={s.cdNum}>{pad(item.val)}</Text>
+                  <Text style={s.cdLbl}>{item.lbl}</Text>
+                </View>
+              ))}
+            </View>
+          </LiquidGlassView>
+        ) : (
+          <BlurView intensity={12} tint="dark" style={s.wcRight}>
+            <Text style={s.cdLabel}>World Cup starts in</Text>
+            <View style={s.cdRow}>
+              {[
+                { val: t.days, lbl: 'Days' },
+                { val: t.hours, lbl: 'Hours' },
+                { val: t.mins, lbl: 'Mins' },
+                { val: t.secs, lbl: 'Secs' },
+              ].map((item) => (
+                <View key={item.lbl} style={s.cdBlock}>
+                  <Text style={s.cdNum}>{pad(item.val)}</Text>
+                  <Text style={s.cdLbl}>{item.lbl}</Text>
+                </View>
+              ))}
+            </View>
+          </BlurView>
+        )}
+      </View>
+    </LinearGradient>
+  );
+}
+
+// ─── Podium Card ──────────────────────────────────────────────────────────────
+function PodiumCard({ rank, name, xp, avatar }: {
+  rank: number; name: string; xp: string; avatar: string;
+}) {
+  const isFirst = rank === 1;
+  const cardType = rank === 1 ? 'gold' : rank === 2 ? 'silver' : 'bronze';
+  
+  return (
+    <View style={[s.podCardWrapper, isFirst && s.podCardFirstWrapper]}>
+      <FifaCard 
+        name={name}
+        playerImage={{ uri: avatar }}
+        cardType={cardType}
+        scale={isFirst ? 0.42 : 0.33}
+        position={isFirst ? 'ST' : (rank === 2 ? 'LW' : 'RW')}
+        countryFlag={isFirst ? 'eg' : (rank === 2 ? 'pt' : 'ar')}
+        age={isFirst ? 31 : (rank === 2 ? 39 : 36)}
+        height={isFirst ? 175 : 187}
+        weight={isFirst ? 71 : 83}
+        foot={isFirst ? 'Left' : 'Right'}
+      />
+      <Text style={s.podXpLabel}>{xp}</Text>
+    </View>
+  );
+}
+
+// ─── Main Screen ──────────────────────────────────────────────────────────────
 export default function RankHubScreen() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.root}>
-      <LinearGradient
-        colors={[BG_BASE, BG_MID, BG_SURFACE, BG_BASE]}
-        style={StyleSheet.absoluteFill}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        locations={[0, 0.3, 0.72, 1]}
-      />
+    <View style={s.root}>
+      {/* ── Floating Header (Liquid Glass) ── */}
+      <Header topInset={insets.top} />
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={{ paddingTop: insets.top + 10, paddingHorizontal: 14, paddingBottom: Math.max(16, insets.bottom) + 84 }}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: insets.top + 60,
+          paddingBottom: Math.max(insets.bottom, 16) + 88,
+        }}
       >
-        <View style={styles.topBar}>
-          <TouchableOpacity style={styles.iconBtn} activeOpacity={0.8}>
-            <Menu size={20} color={TEXT_PRIMARY} />
-          </TouchableOpacity>
-          <View style={styles.brandPill}>
-            <Text style={styles.brandTxt}>90</Text>
-            <View style={styles.plusPill}><Text style={styles.plusTxt}>PLUS</Text></View>
-          </View>
-          <View style={styles.rightPack}>
-            <View style={styles.coinChip}>
-              <Text style={styles.coinTxt}>1200</Text>
-            </View>
-            <TouchableOpacity style={styles.iconBtn} activeOpacity={0.8}>
-              <Bell size={20} color={TEXT_PRIMARY} />
-            </TouchableOpacity>
-          </View>
-        </View>
+        {/*
+         * ── HERO BLOCK ──
+         * This single View contains:
+         *   1. Trophy image (absolute, fills the block)
+         *   2. Left dark gradient (absolute, hides left side)
+         *   3. Bottom dark gradient (absolute, fades into page)
+         *   4. Title text
+         *   5. Profile Card (transparent glass — shows trophy behind it)
+         * The block ends exactly where the profile card ends,
+         * so "All Competitions" appears on the plain dark background.
+         */}
+        <View style={s.heroBlock}>
+          {/* Trophy — absolute, right-aligned, fills the block */}
+          <Image
+            source={require('../../../assets/images/90Plus world cup.png')}
+            style={s.heroBgTrophy}
+            resizeMode="contain"
+          />
+          {/* Left gradient — solid dark on left so text is readable */}
+          <LinearGradient
+            colors={['#05010D', '#05010D', 'rgba(5,1,13,0.9)', 'transparent']}
+            style={s.heroBgGradLeft}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          />
+          {/* Bottom gradient — fades trophy into dark background */}
+          <LinearGradient
+            colors={['transparent', 'rgba(5,1,13,0.55)', '#05010D']}
+            style={s.heroBgGradBottom}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+          />
 
-        <Text style={styles.pageTitle}>Competitions</Text>
-        <Text style={styles.pageSub}>Play. Compete. Win.</Text>
-        <Text style={styles.pageSub}>Join challenges and climb the ranks!</Text>
-
-        <ImageBackground
-          source={{ uri: 'https://images.unsplash.com/photo-1614632537190-23e4146777db?auto=format&fit=crop&w=1400&q=70' }}
-          style={styles.hero}
-          imageStyle={styles.heroImage}
-        >
-        <LinearGradient
-          colors={['rgba(124,58,237,0.35)', 'rgba(9,7,16,0.97)']}
-          style={StyleSheet.absoluteFill}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
-          <View style={styles.profileRow}>
-            <Image source={{ uri: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=160&q=80' }} style={styles.avatarImage} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.heroTitle}>Ali:90+</Text>
-              <Text style={styles.heroSub}>Elite Player</Text>
-              <View style={styles.xpTrack}>
-                <LinearGradient colors={[PURPLE_PRIMARY, '#a855f7']} style={styles.xpFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} />
+          {/* Title text — sits on top of the trophy */}
+          <View style={s.heroText}>
+            <View style={s.titleRow}>
+              <View style={s.trophyIconBox}>
+                <Trophy size={20} color="#fff" fill="#fff" />
               </View>
-              <Text style={styles.heroSub}>2400 / 3000 XP</Text>
+              <Text style={s.pageTitle}>Competitions</Text>
             </View>
-            <View style={styles.shieldWrap}><Shield size={22} color="#a78bfa" /></View>
+            <Text style={s.pageSub1}>Play. Compete. Win.</Text>
+            <Text style={s.pageSub2}>Join challenges and climb the ranks!</Text>
           </View>
-        </ImageBackground>
 
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>All Competitions</Text>
-          <TouchableOpacity style={styles.inline} activeOpacity={0.8}>
-            <Text style={styles.viewAll}>View All</Text>
-            <ChevronRight size={14} color={PURPLE_PRIMARY} />
+          {/* Profile Card — transparent glass, trophy visible through it */}
+          <ProfileCard />
+        </View>
+
+        {/* ── All Competitions ── */}
+        <View style={s.secHead}>
+          <Text style={s.secTitle}>All Competitions</Text>
+          <TouchableOpacity style={s.viewAllRow}>
+            <Text style={s.viewAll}>View All</Text>
+            <ChevronRight size={16} color={ACCENT} />
           </TouchableOpacity>
         </View>
-        <View style={styles.row}>
-          {COMPETITIONS.map((c) => (
-            <ImageBackground
-              key={c.id}
-              source={{ uri: c.id === '1' ? 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=320&q=75' : c.id === '2' ? 'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?auto=format&fit=crop&w=320&q=75' : 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=320&q=75' }}
-              style={styles.card}
-              imageStyle={styles.cardImage}
-            >
-              <LinearGradient
-                colors={['rgba(10,8,18,0.25)', 'rgba(10,8,18,0.96)']}
-                style={StyleSheet.absoluteFill}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-              />
-              <Text style={styles.cardTitle}>{c.title}</Text>
-              <Text style={styles.cardSub}>{c.sub}</Text>
-              <Text style={styles.liveNow}>• Live Now</Text>
-            </ImageBackground>
-          ))}
-        </View>
-
-        <ImageBackground
-          source={{ uri: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=1200&q=75' }}
-          style={styles.road}
-          imageStyle={styles.roadImage}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={s.hScroll}
         >
-          <LinearGradient colors={['rgba(124,58,237,0.35)', 'rgba(9,7,16,0.96)']} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
-          <Text style={styles.roadTitle}>Road To World Cup</Text>
-          <Text style={styles.roadSub}>Complete daily missions and earn points to reach the top!</Text>
-          <View style={styles.roadBottom}>
-            <TouchableOpacity style={styles.btn} activeOpacity={0.85}>
-              <Text style={styles.btnTxt}>View Missions</Text>
-              <ChevronRight size={14} color="#fff" />
-            </TouchableOpacity>
-            <View>
-              <Text style={styles.smallMuted}>World Cup starts in</Text>
-              <Text style={styles.timer}>28 14 36 22</Text>
-            </View>
+          {COMPETITIONS.map(c => <CompCard key={c.id} {...c} />)}
+        </ScrollView>
+
+        {/* ── World Cup Countdown ── */}
+        <WCCard />
+
+        {/* ── Top Players & Leaderboard Section ── */}
+        <View style={s.bottomContentGroup}>
+          {/* Arena Background - Extended to bottom */}
+          <View style={s.arenaBgContainerExtended}>
+            <Image 
+              source={require('../../../assets/images/arena.png')}
+              style={s.arenaImgExtended}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              colors={['#05010D', 'transparent', '#05010D']}
+              style={StyleSheet.absoluteFill}
+            />
           </View>
-        </ImageBackground>
 
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Top Players</Text>
-          <TouchableOpacity style={styles.weekChip} activeOpacity={0.85}>
-            <Text style={styles.weekTxt}>This Week</Text>
-            <ChevronDown size={14} color="rgba(255,255,255,0.7)" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.topGrid}>
-          {TOP_PLAYERS.map((p) => (
-            <View key={p.rank} style={[styles.topCard, p.top && styles.topCardFocus]}>
-              {p.top ? <View style={styles.crown}><Crown size={14} color="#facc15" /></View> : null}
-              <Image source={{ uri: p.avatar }} style={styles.topAvatar} />
-              <View style={styles.rankBadge}><Text style={styles.rankBadgeTxt}>{p.rank}</Text></View>
-              <Text style={styles.topName}>{p.name}</Text>
-              <Text style={styles.topXp}>{p.xp}</Text>
-            </View>
-          ))}
-        </View>
+          <View style={s.secHead}>
+            <Text style={s.secTitle}>Top Players</Text>
+            <TouchableOpacity style={s.weekChip}>
+              <Text style={s.weekTxt}>This Week</Text>
+              <ChevronDown size={14} color="#fff" />
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.board}>
-          <View style={styles.boardRow}><Text style={styles.rowRank}>4</Text><Text style={styles.rowName}>NeymarJr</Text><Text style={styles.rowXp}>8,450 XP</Text></View>
-          <View style={[styles.boardRow, styles.lastRow]}><Text style={styles.rowRank}>5</Text><Text style={styles.rowName}>BlueLion</Text><Text style={styles.rowXp}>7,210 XP</Text></View>
+          {/* Podium: 2nd | 1st | 3rd */}
+          <View style={s.podiumRow}>
+            {PODIUM.map(p => <PodiumCard key={p.rank} {...p} />)}
+          </View>
+
+          {/* Lower leaderboard with Liquid Glass */}
+          <View style={s.board}>
+            {LOWER.map((p, i) => {
+              const RowWrapper = isLiquidGlassSupported ? LiquidGlassView : BlurView;
+              const rowProps = isLiquidGlassSupported
+                ? { effect: "clear" as const, interactive: true }
+                : { intensity: 15, tint: "dark" as const };
+
+              return (
+                <RowWrapper
+                  key={p.rank}
+                  {...(rowProps as any)}
+                  style={[s.boardRowGlass, i < LOWER.length - 1 && { marginBottom: 8 }]}
+                >
+                  <View style={s.rankBadgeSmall}>
+                    <Text style={s.boardRank}>{p.rank}</Text>
+                  </View>
+                  <Image source={{ uri: p.avatar }} style={s.boardAvatar} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.boardName}>{p.name}</Text>
+                    <Text style={s.boardRole}>{p.role}</Text>
+                  </View>
+                  <Text style={s.boardXp}>{p.xp}</Text>
+                </RowWrapper>
+              );
+            })}
+          </View>
         </View>
       </ScrollView>
 
@@ -161,124 +424,476 @@ export default function RankHubScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: BG_BASE },
-  scroll: { flex: 1 },
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
-  iconBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  rightPack: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  brandPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, height: 44,
-    borderRadius: 22, borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)', backgroundColor: 'rgba(255,255,255,0.05)',
+// ─── Styles ───────────────────────────────────────────────────────────────────
+const s = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#05010D' },
+
+  // ── World Cup Background (behind header + hero) ──
+  wcBgContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 420,
+    zIndex: 0,
   },
-  brandTxt: { color: TEXT_PRIMARY, fontSize: 24, fontWeight: '900', letterSpacing: 0.2 },
-  plusPill: { backgroundColor: 'rgba(124,58,237,0.9)', borderRadius: 7, paddingHorizontal: 7, paddingVertical: 2 },
-  plusTxt: { color: '#140c2a', fontSize: 11, fontWeight: '900' },
-  coinChip: {
-    height: 30, borderRadius: 15, borderWidth: 1, borderColor: 'rgba(167,139,250,0.4)',
-    backgroundColor: 'rgba(14,10,24,0.94)', paddingHorizontal: 10, alignItems: 'center', justifyContent: 'center',
+  wcBgTrophy: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    width: '72%',
+    height: 420,
+    opacity: 0.95,
   },
-  coinTxt: { color: '#e9d5ff', fontSize: 12, fontWeight: '800' },
-  pageTitle: { color: TEXT_PRIMARY, fontSize: 28, fontWeight: '900', lineHeight: 32 },
-  pageSub: { color: TEXT_MUTED, fontSize: 14, lineHeight: 18, fontWeight: '600' },
-  hero: {
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 14,
+  // ── Hero Block ──
+  heroBlock: {
     overflow: 'hidden',
+    paddingBottom: 20,
+  },
+  heroBgTrophy: {
+    position: 'absolute',
+    top: 0,
+    right: -0,
+    width: '90%',
+    height: '100%',
+    opacity: 0.95,
+  },
+  heroBgGradLeft: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: '62%',
+  },
+  heroBgGradBottom: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 100,
+  },
+  heroText: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 12,
+    zIndex: 1,
+  },
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(5,1,13,0.0)',
+  },
+  // Small left logo pill
+  logoPillSmall: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
+    gap: 5,
   },
-  heroImage: { borderRadius: 16, opacity: 0.78 },
-  profileRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  avatarImage: {
-    width: 54, height: 54, borderRadius: 27, borderWidth: 1, borderColor: 'rgba(167,139,250,0.48)',
-    backgroundColor: 'rgba(124,58,237,0.2)',
+  logo90Small: { color: '#fff', fontSize: 15, fontWeight: '900', letterSpacing: 0.3 },
+  plusChipSmall: {
+    backgroundColor: ACCENT,
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
   },
-  heroTitle: { color: TEXT_PRIMARY, fontSize: 18, fontWeight: '800' },
-  heroSub: { color: TEXT_MUTED, marginTop: 4, fontSize: 12, fontWeight: '600' },
-  xpTrack: { marginTop: 8, height: 6, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.09)', overflow: 'hidden' },
-  xpFill: { width: '66%', height: '100%' },
-  shieldWrap: {
-    width: 44, height: 44, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(167,139,250,0.42)',
-    backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center',
-  },
-  sectionHead: { marginTop: 2, marginBottom: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  sectionTitle: { color: TEXT_PRIMARY, fontSize: 20, fontWeight: '800' },
-  inline: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  viewAll: { color: PURPLE_PRIMARY, fontSize: 14, fontWeight: '700' },
-  row: { flexDirection: 'row', gap: 8, marginBottom: 14 },
-  card: {
-    flex: 1,
-    minHeight: 122,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(12,10,20,0.95)',
-    padding: 10,
-    overflow: 'hidden',
-  },
-  cardImage: { borderRadius: 12, opacity: 0.9 },
-  cardTitle: { color: TEXT_PRIMARY, fontSize: 12, fontWeight: '800', marginTop: 50 },
-  cardSub: { color: TEXT_MUTED, fontSize: 10, lineHeight: 13, marginTop: 3 },
-  liveNow: { color: PURPLE_PRIMARY, fontSize: 10, fontWeight: '700', marginTop: 7 },
-  road: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(12,10,20,0.95)',
-    padding: 12,
-    marginBottom: 14,
-    overflow: 'hidden',
-  },
-  roadImage: { borderRadius: 14, opacity: 0.9 },
-  roadTitle: { color: TEXT_PRIMARY, fontSize: 22, fontWeight: '800', marginBottom: 6 },
-  roadSub: { color: TEXT_MUTED, fontSize: 13, lineHeight: 18, maxWidth: '78%' },
-  roadBottom: { marginTop: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  btn: {
-    height: 36,
-    borderRadius: 10,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12,
+  logoPlusSmall: { color: '#fff', fontSize: 8, fontWeight: '900', letterSpacing: 0.8 },
+  coinChip: {
     flexDirection: 'row',
-    gap: 4,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    gap: 5,
+  },
+  coinTxt: { color: '#fff', fontSize: 13, fontWeight: '800' },
+
+  // ── Hero text (inside heroBlock) ──
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  trophyIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: 'rgba(39, 8, 94, 0.5)',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: PURPLE_PRIMARY,
-  },
-  btnTxt: { color: '#fff', fontWeight: '700', fontSize: 13 },
-  smallMuted: { color: 'rgba(255,255,255,0.55)', fontSize: 11, textAlign: 'right' },
-  timer: { color: TEXT_PRIMARY, fontSize: 16, fontWeight: '800', letterSpacing: 0.6, marginTop: 2 },
-  weekChip: {
-    height: 34, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
-    backgroundColor: 'rgba(255,255,255,0.04)', paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', gap: 4,
-  },
-  weekTxt: { color: 'rgba(255,255,255,0.75)', fontSize: 12, fontWeight: '700' },
-  topGrid: { flexDirection: 'row', gap: 8, marginBottom: 10 },
-  topCard: {
-    flex: 1, borderRadius: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)',
-    backgroundColor: 'rgba(12,10,20,0.95)', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 8, position: 'relative',
-  },
-  topCardFocus: { borderColor: 'rgba(245,197,24,0.42)' },
-  crown: { position: 'absolute', top: 6, right: 7 },
-  topAvatar: { width: 58, height: 58, borderRadius: 29, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', backgroundColor: 'rgba(255,255,255,0.08)' },
-  rankBadge: { marginTop: -10, width: 24, height: 24, borderRadius: 12, backgroundColor: 'rgba(245,197,24,0.95)', alignItems: 'center', justifyContent: 'center' },
-  rankBadgeTxt: { color: '#201200', fontSize: 12, fontWeight: '900' },
-  topName: { marginTop: 8, color: TEXT_PRIMARY, fontSize: 14, fontWeight: '700' },
-  topXp: { marginTop: 4, color: PURPLE_PRIMARY, fontSize: 13, fontWeight: '700' },
-  board: {
-    borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(12,10,20,0.95)',
+    borderColor: 'rgba(168,85,247,0.4)',
+    shadowColor: ACCENT,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  pageTitle: { color: '#fff', fontSize: 34, fontWeight: '900' },
+  pageSub1: { color: 'rgba(255,255,255,0.85)', fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  pageSub2: { color: 'rgba(255,255,255,0.45)', fontSize: 13 },
+
+  // ── Profile Card ──
+  profileCard: {
+    marginHorizontal: 12,
+    borderRadius: 22,
+    padding: 18,
+    marginTop:19,
+    marginBottom: 0,
+    backgroundColor: 'rgba(255,255,255,0.00)',
+    borderWidth: 1,
+    borderColor: 'rgba(69, 5, 128, 0.25)',
+    overflow: 'hidden',
+    zIndex: 1,
+  },
+  profileCardOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(80,20,160,0.00)',
+    borderRadius: 22,
+  },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  avatarWrap: { position: 'relative' },
+  avatar: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: 'rgba(124,58,237,0.0)',
+  },
+  avatarRing: {
+    position: 'absolute',
+    top: -3,
+    left: -3,
+    width: 74,
+    height: 74,
+    borderRadius: 37,
+    borderWidth: 2.5,
+    borderColor: ACCENT,
+  },
+  profileInfo: { flex: 1, gap: 10 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  username: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  verifiedBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#1D8CF8',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  verifiedTxt: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  eliteRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  eliteTxt: { color: ACCENT, fontSize: 13, fontWeight: '600' },
+  xpRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 6,
+  },
+  lvlBadge: {
+    backgroundColor: ACCENT,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  lvlTxt: { color: '#fff', fontSize: 11, fontWeight: '900' },
+  xpBarBg: {
+    flex: 1,
+    height: 8,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 6,
     overflow: 'hidden',
   },
-  boardRow: {
-    minHeight: 58, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center',
-    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)',
+  xpBarFill: { width: '80%', height: '100%' },
+  xpLabel: { fontSize: 12 },
+  xpCur: { color: ACCENT, fontWeight: '900' },
+  xpMax: { color: 'rgba(255,255,255,0.4)', fontWeight: '600' },
+  // Shield badge (right side)
+  shieldBadgeWrap: {
+    width: 60,
+    height: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
   },
-  lastRow: { borderBottomWidth: 0 },
-  rowRank: { width: 20, color: 'rgba(255,255,255,0.75)', fontSize: 16, fontWeight: '800' },
-  rowName: { flex: 1, color: TEXT_PRIMARY, fontSize: 14, fontWeight: '700' },
-  rowXp: { color: PURPLE_PRIMARY, fontSize: 16, fontWeight: '800' },
+  shieldStarInner: {
+    position: 'absolute',
+    top: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  laurelLeft: {
+    position: 'absolute',
+    bottom: 4,
+    left: 2,
+    width: 14,
+    height: 28,
+    borderLeftWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: ACCENT,
+    borderBottomLeftRadius: 8,
+    opacity: 0.6,
+  },
+  laurelRight: {
+    position: 'absolute',
+    bottom: 4,
+    right: 2,
+    width: 14,
+    height: 28,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: ACCENT,
+    borderBottomRightRadius: 8,
+    opacity: 0.6,
+  },
+ 
+  // ── Section Header ──
+  secHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginTop: 28,
+    marginBottom: 14,
+  },
+  secTitle: { color: '#fff', fontSize: 20, fontWeight: '800' },
+  viewAllRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  viewAll: { color: ACCENT, fontSize: 14, fontWeight: '700' },
+  weekChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#000000ff',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: '#2A1A5A',
+    gap: 4,
+  },
+  weekTxt: { color: '#fff', fontSize: 13, fontWeight: '600' },
+  // ── Competition Cards ──
+  hScroll: { paddingLeft: 16, paddingRight: 8, gap: 12 },
+  compCard: {
+    width: 180,
+    borderRadius: 30,
+    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)', 
+    borderWidth: 1.2,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    alignItems: 'center',
+    overflow: 'hidden',
+    minHeight: 245,
+  },
+  compIconArea: {
+    width: 120,
+    height: 110,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    zIndex: 2,
+  },
+  compImg: { width: 115, height: 815 },
+  iconGlowAmbient: {
+    position: 'absolute',
+    top:-160,
+    width: 70,
+    height: 70,
+    backgroundColor: ACCENT,
+    borderRadius: 35,
+    opacity: 0.3,
+    zIndex: 1,
+    transform: [{ scale: 2 }],
+  },
+  compTitle: { color: '#fff', fontSize: 16, fontWeight: '900', textAlign: 'center', marginBottom: 6 },
+  compSub: { color: '#999', fontSize: 11, textAlign: 'center', lineHeight: 16, marginBottom: 18, height: 32 },
+  livePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 1)',
+  },
+  liveDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: ACCENT },
+  liveTxt: { color: ACCENT, fontWeight: '800', fontSize: 12 },
+
+  // ── World Cup Card ──
+  wcCard: {
+    marginHorizontal: 0,
+    borderRadius: 0,
+    marginTop: 20,
+    overflow: 'hidden',
+    borderWidth: 0,
+    minHeight: 250,
+    backgroundColor: '#0D0820',
+  },
+  wcPlayerImg: {
+    position: 'absolute',
+    right: 50,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 1,
+    transform: [
+      { scale: 1.4 },
+      { translateY: -10 },
+    ],
+  },
+
+  wcInner: {
+    flexDirection: 'row',
+    padding: 24,
+    minHeight: 250,
+    zIndex: 2,
+  },
+  wcLeft: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingRight: 10,
+    gap: 8,
+  },
+  wcTitle: { color: '#fff', fontSize: 24, fontWeight: '900', lineHeight: 30 },
+  wcSub: { color: '#aaa', fontSize: 11, lineHeight: 17, marginTop: 4, marginBottom: 8 },
+  wcBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: ACCENT,
+    borderRadius: 14,
+    paddingVertical: 11,
+    paddingHorizontal: 18,
+    alignSelf: 'flex-start',
+    gap: 4,
+    marginTop: 12,
+  },
+  wcBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 13 },
+  wcRight: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'rgba(10, 10, 20, 0.00)',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderTopLeftRadius: 24,
+    borderWidth: 1.5,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    zIndex: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: -10, height: -10 },
+    shadowOpacity: 0.6,
+    shadowRadius: 25,
+    elevation: 20,
+    overflow: 'hidden',
+  },
+  cdLabel: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 8,
+    fontWeight: '700',
+    marginBottom: 6,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  cdRow: { flexDirection: 'row', gap: 10 },
+  cdBlock: { alignItems: 'center', minWidth: 32 },
+  cdNum: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  cdLbl: { color: 'rgba(255,255,255,0.4)', fontSize: 8, fontWeight: '700', marginTop: 1 },
+
+  // ── Top Players & Board Section ──
+  bottomContentGroup: {
+    marginTop: 10,
+    paddingTop: 40,
+    position: 'relative',
+    paddingBottom: 20, // Clean stop after rank 5
+    overflow: 'hidden', 
+  },
+  arenaBgContainerExtended: {
+    position: 'absolute',
+    top: -100,
+    left: '0%',
+    right: '0%',
+    bottom: -110,
+    zIndex: -1,
+  },
+  arenaImgExtended: {
+    width: '120%',
+    height: '115%', 
+    top: -200, // Adjusted to match the new paddingTop: 40
+    opacity: 0.5,
+  },
+  boardRowGlass: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0)',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(241, 241, 241, 0)',
+    gap: 12,
+  },
+  rankBadgeSmall: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // ── Podium ──
+  podiumRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+    gap: -15, // Slight overlap for depth
+  },
+  board: {
+    paddingHorizontal: 16,
+    marginTop: 10,
+  },
+  podCardWrapper: {
+    alignItems: 'center',
+  },
+  podCardFirstWrapper: {
+    zIndex: 10,
+    marginBottom: 10,
+  },
+  podXpLabel: {
+    color: ACCENT,
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 8,
+  },
+  boardRank: { color: '#888', fontSize: 16, fontWeight: '700', width: 24, textAlign: 'center' },
+  boardAvatar: { width: 44, height: 44, borderRadius: 22 },
+  boardName: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  boardRole: { color: '#555', fontSize: 12, marginTop: 2 },
+  boardXp: { color: ACCENT, fontWeight: '800', fontSize: 14 },
 });

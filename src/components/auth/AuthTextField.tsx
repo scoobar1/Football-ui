@@ -8,6 +8,7 @@ import {
   ViewStyle,
   Platform,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import type { LucideIcon } from 'lucide-react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import {
@@ -34,6 +35,7 @@ export function AuthTextField({
 
   return (
     <View style={[styles.wrap, containerStyle]}>
+      <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
       <Icon color={TEXT_MUTED} size={20} strokeWidth={2} />
       <TextInput
         {...rest}
@@ -61,13 +63,14 @@ const styles = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
-    backgroundColor: AUTH_SURFACE_INPUT,
+    borderRadius: 18,
+    backgroundColor: 'rgba(15, 15, 25, 0.7)', // لون أغمق وأثقل للعزل
     borderWidth: 1,
-    borderColor: AUTH_BORDER,
-    paddingHorizontal: 14,
-    minHeight: 54,
-    gap: 10,
+    borderColor: 'rgba(124,58,237,0.3)',
+    paddingHorizontal: 16,
+    minHeight: 60,
+    gap: 16,
+    overflow: 'hidden',
   },
   input: {
     flex: 1,
@@ -77,5 +80,5 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 12 : 10,
     textAlign: 'left',
   },
-  spacer: { width: 20 },
+  spacer: { width: 70 },
 });
