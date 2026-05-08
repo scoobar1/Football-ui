@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { RadioTower, Newspaper, ChartColumnIncreasing } from 'lucide-react-native';
+import { RadioTower, Brain, Bot } from 'lucide-react-native';
 import { AUTH_ACCENT } from './AuthTokens';
 import { TEXT_PRIMARY, TEXT_MUTED, TEXT_SECONDARY } from '../../../constants/tokens';
 
 const FEATS = [
   { Icon: RadioTower, label: 'Live scores' },
-  { Icon: Newspaper, label: 'Breaking news' },
-  { Icon: ChartColumnIncreasing, label: 'Stats & analysis' },
+  { Icon: Brain, label: 'Quizzes' },
+  { Icon: Bot, label: 'Chat bot' },
 ];
 
 export function AuthHeroBlock({ compact }: { compact?: boolean }) {

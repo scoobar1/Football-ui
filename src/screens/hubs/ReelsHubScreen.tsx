@@ -10,6 +10,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { Play } from 'lucide-react-native';
 import { MainShell } from '../../components/shell/MainShell';
 import {
@@ -49,6 +50,7 @@ export default function ReelsHubScreen() {
         style={styles.hero}
         imageStyle={styles.heroImage}
       >
+        <BlurView intensity={24} tint="dark" style={StyleSheet.absoluteFill} />
         <LinearGradient
           colors={['rgba(7,5,13,0.45)', 'rgba(8,6,15,0.82)', 'rgba(8,6,15,0.98)']}
           start={{ x: 0, y: 0 }}
@@ -81,6 +83,7 @@ export default function ReelsHubScreen() {
               style={[styles.tag, on && styles.tagOn]}
               activeOpacity={0.85}
             >
+              <BlurView intensity={18} tint="dark" style={StyleSheet.absoluteFill} />
               {on ? (
                 <LinearGradient
                   colors={[...GRADIENT_CTA_PURPLE]}
@@ -99,6 +102,7 @@ export default function ReelsHubScreen() {
         {ITEMS.map((it, i) => (
           <TouchableOpacity key={i} activeOpacity={0.9} style={[styles.tile, { width: CELL }]}>
             <Image source={{ uri: it.img }} style={styles.img} resizeMode="cover" />
+            <BlurView intensity={10} tint="dark" style={styles.tileGlass} />
             <Overlay />
             <View style={styles.playCircle}>
               <Play color="#fff" size={22} strokeWidth={2.2} fill="rgba(255,255,255,0.2)" />
@@ -137,6 +141,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER_ARENA,
     minHeight: 118,
+    backgroundColor: 'rgba(16,12,24,0.45)',
   },
   heroImage: {
     opacity: 0.95,
@@ -171,11 +176,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: BORDER_ARENA,
-    backgroundColor: 'rgba(8,6,14,0.72)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: 'rgba(9,7,16,0.55)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
 
   tagRow: {
@@ -189,9 +195,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 999,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: BORDER_ARENA,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   tagOn: {
     borderColor: 'transparent',
@@ -210,9 +216,13 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS_LG,
     overflow: 'hidden',
     marginBottom: 2,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 1,
     borderColor: BORDER_ARENA,
+  },
+  tileGlass: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.35,
   },
   img: { ...StyleSheet.absoluteFillObject },
   playCircle: {
@@ -234,9 +244,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     padding: 10,
-    backgroundColor: 'rgba(6,5,12,0.78)',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: BORDER_ARENA,
+    backgroundColor: 'rgba(6,5,12,0.62)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.09)',
   },
   tileTitle: { color: TEXT_PRIMARY, fontSize: 13, fontWeight: '700', marginBottom: 4 },
   tileViews: { color: TEXT_MUTED, fontSize: 11, fontWeight: '600' },

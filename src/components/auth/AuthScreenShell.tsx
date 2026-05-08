@@ -12,7 +12,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { X } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { StatusBar } from 'expo-status-bar';
 import { AuthHeroBlock } from './AuthHeroBlock';
 import { AUTH_PANEL_BG } from './AuthTokens';
@@ -37,7 +37,12 @@ export function AuthScreenShell({ heroMode = 'full', children }: Props) {
       <StatusBar style="light" />
 
       <View style={[styles.photoSlot, { height: imgH }]}>
-        <ImageBackground source={HERO_IMG} style={styles.bgimg} resizeMode="cover">
+        <ImageBackground
+          source={HERO_IMG}
+          style={styles.bgimg}
+          imageStyle={styles.bgimgAsset}
+          resizeMode="cover"
+        >
           <LinearGradient
             colors={['rgba(11,11,21,0.15)', 'rgba(11,11,21,0.55)', 'rgba(6,5,14,1)']}
             locations={[0, 0.45, 1]}
@@ -66,13 +71,13 @@ export function AuthScreenShell({ heroMode = 'full', children }: Props) {
         >
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Close"
+            accessibilityLabel="Go back"
             onPress={() => (router.canGoBack() ? router.back() : router.replace('/home'))}
             hitSlop={16}
             style={[styles.close, { top: Math.max(insets.top, 8) }]}
           >
             <View style={styles.closeInner}>
-              <X color={TEXT_PRIMARY} size={20} strokeWidth={2} />
+              <ChevronLeft color={TEXT_PRIMARY} size={22} strokeWidth={2.4} />
             </View>
           </Pressable>
 
@@ -95,6 +100,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: BG_BASE },
   photoSlot: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 0 },
   bgimg: { flex: 1, width: '100%', height: '100%' },
+  bgimgAsset: { height: '108%', transform: [{ translateY: 8 }] },
   shadowBand: {
     position: 'absolute',
     left: 0,
@@ -106,7 +112,7 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 52 },
   close: {
     position: 'absolute',
-    left: 20,
+    right: 20,
     zIndex: 10,
     width: 40,
     height: 40,

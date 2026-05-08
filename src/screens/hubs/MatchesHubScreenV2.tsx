@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { Bell, Star, ChevronDown, SlidersHorizontal } from 'lucide-react-native';
 import { MainShell } from '../../components/shell/MainShell';
 import { TEXT_PRIMARY, TEXT_MUTED, PURPLE_PRIMARY } from '../../../constants/tokens';
@@ -102,6 +103,13 @@ function MatchRow({ fixture }: { fixture: Fixture }) {
 function LeagueCard({ group }: { group: LeagueGroup }) {
   return (
     <View style={styles.leagueCard}>
+      <BlurView intensity={24} tint="dark" style={StyleSheet.absoluteFill} />
+      <LinearGradient
+        colors={['rgba(255,255,255,0.12)', 'rgba(255,255,255,0.02)', 'transparent']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.cardShine}
+      />
       <View style={styles.leagueHead}>
         <View style={styles.leagueLeft}>
           <View style={styles.leagueLogoWrap}>
@@ -118,7 +126,7 @@ function LeagueCard({ group }: { group: LeagueGroup }) {
         <MatchRow key={fixture.id} fixture={fixture} />
       ))}
       <TouchableOpacity activeOpacity={0.8} style={styles.viewAllBtn}>
-        <Text style={styles.viewAllTxt}>View All</Text>
+        <Text style={styles.viewAllTxt}>View All  ›</Text>
       </TouchableOpacity>
     </View>
   );
@@ -142,6 +150,7 @@ export default function MatchesHubScreenV2() {
             const active = filter === f;
             return (
               <TouchableOpacity key={f} onPress={() => setFilter(f)} activeOpacity={0.85} style={[styles.tabChip, active && styles.tabChipActive]}>
+                <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
                 {active ? (
                   <LinearGradient colors={[PURPLE_PRIMARY, '#9333ea']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
                 ) : null}
@@ -152,6 +161,7 @@ export default function MatchesHubScreenV2() {
           })}
         </ScrollView>
         <TouchableOpacity style={styles.filterBtn} activeOpacity={0.85}>
+          <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
           <SlidersHorizontal size={18} color="rgba(255,255,255,0.72)" />
         </TouchableOpacity>
       </View>
@@ -170,7 +180,7 @@ const styles = StyleSheet.create({
   tabsScroll: { gap: 8, paddingRight: 6 },
   tabChip: {
     minWidth: 62, height: 38, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(255,255,255,0.03)', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.02)', alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 14, overflow: 'hidden', flexDirection: 'row', gap: 6,
   },
   tabChipActive: { borderColor: 'rgba(167,139,250,0.55)' },
@@ -179,15 +189,23 @@ const styles = StyleSheet.create({
   liveDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#ef4444' },
   filterBtn: {
     width: 42, height: 38, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(255,255,255,0.03)', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.02)', alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
   },
   groupsWrap: { gap: 14 },
   leagueCard: {
     borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(9,7,16,0.95)', overflow: 'hidden',
+    backgroundColor: 'rgba(12,10,20,0.65)', overflow: 'hidden',
+  },
+  cardShine: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
   },
   leagueHead: {
-    height: 44, paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)',
+    height: 46, paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.07)',
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
   leagueLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
@@ -205,8 +223,8 @@ const styles = StyleSheet.create({
   leagueRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   leagueLive: { color: PURPLE_PRIMARY, fontSize: 14, fontWeight: '700' },
   rowWrap: {
-    minHeight: 96, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)',
+    minHeight: 94, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10,
+    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)',
   },
   rowIcon: { width: 24, alignItems: 'center', justifyContent: 'center' },
   rowBody: {
@@ -214,20 +232,20 @@ const styles = StyleSheet.create({
   },
   teamCol: { width: '34%', alignItems: 'center', gap: 6 },
   logoStub: {
-    width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center',
+    width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.09)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.16)', alignItems: 'center', justifyContent: 'center',
   },
-  teamLogo: { width: 24, height: 24 },
+  teamLogo: { width: 25, height: 25 },
   teamTxt: { color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: '600', maxWidth: '100%' },
   scoreCol: { width: '32%', alignItems: 'center' },
-  liveBadge: { color: '#ef4444', fontSize: 12, fontWeight: '800' },
+  liveBadge: { color: '#ef4444', fontSize: 11, fontWeight: '900', backgroundColor: 'rgba(239,68,68,0.14)', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 999, overflow: 'hidden' },
   ftBadge: { color: 'rgba(255,255,255,0.55)', fontSize: 12, fontWeight: '800' },
   scoreTxt: {
-    marginTop: 3, color: '#fff', fontSize: 36, lineHeight: 38, fontWeight: '900',
+    marginTop: 4, color: '#fff', fontSize: 34, lineHeight: 36, fontWeight: '900',
     letterSpacing: -1, fontVariant: ['tabular-nums'],
   },
   scoreDash: { color: 'rgba(255,255,255,0.45)' },
   minuteTxt: { marginTop: 2, color: PURPLE_PRIMARY, fontSize: 14, fontWeight: '700', fontVariant: ['tabular-nums'] },
-  viewAllBtn: { height: 44, alignItems: 'center', justifyContent: 'center' },
-  viewAllTxt: { color: PURPLE_PRIMARY, fontSize: 16, fontWeight: '700' },
+  viewAllBtn: { height: 44, alignItems: 'center', justifyContent: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' },
+  viewAllTxt: { color: PURPLE_PRIMARY, fontSize: 15, fontWeight: '800' },
 });
