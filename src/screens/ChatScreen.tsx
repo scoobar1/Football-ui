@@ -3,49 +3,48 @@
  * Matches screenshots exactly. Keyboard-aware input stays above keyboard.
  */
 
-import React, { useRef, useState, useCallback, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-  Alert,
-  Modal,
-  Clipboard,
-  Platform,
-  Keyboard,
-  KeyboardEvent,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import Animated, {
-  useSharedValue,
-  withSpring,
-  withRepeat,
-  withTiming,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+    Alert,
+    Clipboard,
+    Keyboard,
+    KeyboardEvent,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    useWindowDimensions,
+    View,
+} from 'react-native';
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withRepeat,
+    withTiming
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, {
-  Path,
-  Defs,
-  RadialGradient as SvgRadialGradient,
-  Stop,
-  Rect,
+    Defs,
+    Path,
+    Rect,
+    Stop,
+    RadialGradient as SvgRadialGradient,
 } from 'react-native-svg';
 
-import { useAIChatNative, Conversation } from '../hooks/useAIChatNative';
-import { AIMessageBubble, UserMessageBubble } from '../components/chat/MessageBubble';
-import { ThinkingIndicator } from '../components/chat/ThinkingIndicator';
-import { MessageCounter } from '../components/chat/MessageCounter';
-import { Toast } from '../components/chat/Toast';
+import { Colors, Gradients } from '../../constants/theme';
 import { ConversationContextMenu } from '../components/chat/ConversationContextMenu';
+import { AIMessageBubble, UserMessageBubble } from '../components/chat/MessageBubble';
+import { MessageCounter } from '../components/chat/MessageCounter';
 import { ConversationSkeleton, UserProfileSkeleton } from '../components/chat/SkeletonLoader';
-import { Colors, Radius, FontSize, Spacing, Gradients } from '../../constants/theme';
+import { ThinkingIndicator } from '../components/chat/ThinkingIndicator';
+import { Toast } from '../components/chat/Toast';
+import { Conversation, useAIChatNative } from '../hooks/useAIChatNative';
 
 // ─── Background ───────────────────────────────────────────────────────────────
 
@@ -108,21 +107,21 @@ function RenameModal({ visible, initialValue, onConfirm, onCancel }: RenameModal
       <View style={styles.renameOverlay}>
         <View style={[styles.renameCard, { backgroundColor: '#1A1525' }]}>
           <View style={styles.renameContent}>
-            <Text style={styles.renameTitle}>إعادة تسمية</Text>
-            <Text style={styles.renameSubtitle}>أدخل الاسم الجديد للمحادثة</Text>
+            <Text style={styles.renameTitle}>Rename</Text>
+            <Text style={styles.renameSubtitle}>Enter a new conversation name</Text>
             <TextInput
               style={styles.renameInput}
               value={value}
               onChangeText={setValue}
-              placeholder="اسم المحادثة..."
+              placeholder="Conversation name..."
               placeholderTextColor={Colors.textMuted}
-              textAlign="right"
+              textAlign="left"
               autoFocus
               maxLength={60}
             />
             <View style={styles.renameActions}>
               <Pressable onPress={onCancel} style={styles.renameCancelBtn}>
-                <Text style={styles.renameCancelText}>إلغاء</Text>
+                <Text style={styles.renameCancelText}>Cancel</Text>
               </Pressable>
               <Pressable
                 onPress={() => { if (value.trim()) onConfirm(value.trim()); }}
@@ -133,7 +132,7 @@ function RenameModal({ visible, initialValue, onConfirm, onCancel }: RenameModal
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                   style={styles.renameConfirmGradient}
                 >
-                  <Text style={styles.renameConfirmText}>تأكيد</Text>
+                  <Text style={styles.renameConfirmText}>Confirm</Text>
                 </LinearGradient>
               </Pressable>
             </View>
@@ -240,7 +239,7 @@ function HistoryPanel({
         <View style={styles.panelContent}>
           {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
           <View style={styles.panelHeader}>
-            <Text style={styles.panelTitle}>المحادثات</Text>
+            <Text style={styles.panelTitle}>Conversations</Text>
             <Pressable onPress={onClose} style={styles.panelCloseButton}>
               <Text style={styles.panelCloseText}>×</Text>
             </Pressable>
@@ -257,14 +256,14 @@ function HistoryPanel({
                 <View style={styles.profileLeft}>
                   <View style={styles.avatar}>
                     <LinearGradient colors={['#8B5CF6', '#7C3AED']} style={StyleSheet.absoluteFill} />
-                    <Text style={styles.avatarText}>م</Text>
+                    <Text style={styles.avatarText}>M</Text>
                     <View style={styles.onlineDot} />
                   </View>
                   <View>
-                    <Text style={styles.profileName}>محمود</Text>
+                    <Text style={styles.profileName}>Mahmoud</Text>
                     <View style={styles.onlineRow}>
                       {isOnline && <OnlinePulse />}
-                      <Text style={styles.onlineText}>{isOnline ? 'نشط الآن' : 'غير متصل'}</Text>
+                      <Text style={styles.onlineText}>{isOnline ? 'Active now' : 'Offline'}</Text>
                     </View>
                   </View>
                 </View>
@@ -275,12 +274,12 @@ function HistoryPanel({
                 {pinned.length > 0 && (
                   <>
                     <View style={styles.sectionHeader}>
-                      <Text style={styles.sectionLabel}>المحادثات المثبتة</Text>
+                      <Text style={styles.sectionLabel}>Pinned</Text>
                     </View>
                     <View style={styles.conversationsGroup}>
                       {pinned.map(c => (
                         <HistoryItem
-                          key={c.id} id={c.id} title={c.title} date="اليوم"
+                          key={c.id} id={c.id} title={c.title} date="Today"
                           isActive={c.id === activeConversationId} isPinned={c.isPinned}
                           onPress={() => onSelectConversation(c.id)}
                           onLongPress={() => setContextMenu({ conversation: c })}
@@ -290,12 +289,12 @@ function HistoryPanel({
                   </>
                 )}
                 <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionLabel}>المحادثات السابقة</Text>
+                  <Text style={styles.sectionLabel}>Previous</Text>
                 </View>
                 <View style={styles.conversationsGroup}>
                   {unpinned.map(c => (
                     <HistoryItem
-                      key={c.id} id={c.id} title={c.title} date="اليوم"
+                      key={c.id} id={c.id} title={c.title} date="Today"
                       isActive={c.id === activeConversationId} isPinned={c.isPinned}
                       onPress={() => onSelectConversation(c.id)}
                       onLongPress={() => setContextMenu({ conversation: c })}
@@ -310,7 +309,7 @@ function HistoryPanel({
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                   style={styles.newChatGradient}
                 >
-                  <Text style={styles.newChatText}>+ محادثة جديدة</Text>
+                  <Text style={styles.newChatText}>+ New chat</Text>
                 </LinearGradient>
               </Pressable>
             </>
@@ -324,20 +323,20 @@ function HistoryPanel({
           isPinned={contextMenu.conversation.isPinned}
           onPin={async () => {
             await onTogglePin(contextMenu.conversation.id, contextMenu.conversation.isPinned);
-            setToast({ message: contextMenu.conversation.isPinned ? 'تم إلغاء التثبيت ✓' : 'تم التثبيت ✓', type: 'success' });
+            setToast({ message: contextMenu.conversation.isPinned ? 'Unpinned' : 'Pinned', type: 'success' });
             setContextMenu(null);
           }}
           onRename={() => { setContextMenu(null); setRenameModal({ conversation: contextMenu.conversation }); }}
-          onShare={() => { setToast({ message: 'سيتم إضافة هذه الميزة قريباً', type: 'info' }); setContextMenu(null); }}
+          onShare={() => { setToast({ message: 'Coming soon', type: 'info' }); setContextMenu(null); }}
           onDelete={() => {
             const c = contextMenu.conversation;
             setContextMenu(null);
-            Alert.alert('حذف المحادثة', `هل أنت متأكد من حذف "${c.title}"؟`, [
-              { text: 'إلغاء', style: 'cancel' },
-              { text: 'حذف', style: 'destructive', onPress: async () => { await onDeleteConversation(c.id); setToast({ message: 'تم الحذف بنجاح ✓', type: 'success' }); } },
+            Alert.alert('Delete conversation', `Are you sure you want to delete "${c.title}"?`, [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Delete', style: 'destructive', onPress: async () => { await onDeleteConversation(c.id); setToast({ message: 'Deleted', type: 'success' }); } },
             ]);
           }}
-          onCopy={() => { setToast({ message: 'تم نسخ المحادثة ✓', type: 'success' }); setContextMenu(null); }}
+          onCopy={() => { setToast({ message: 'Copied', type: 'success' }); setContextMenu(null); }}
           onClose={() => setContextMenu(null)}
         />
       )}
@@ -348,7 +347,7 @@ function HistoryPanel({
         onConfirm={async (newName) => {
           if (renameModal) {
             await onRenameConversation(renameModal.conversation.id, newName);
-            setToast({ message: 'تم تغيير الاسم بنجاح ✓', type: 'success' });
+            setToast({ message: 'Renamed', type: 'success' });
             setRenameModal(null);
           }
         }}
@@ -449,7 +448,7 @@ export default function ChatScreen() {
       {/* ── Header ── */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <View style={styles.headerContent}>
-          {/* Right: menu (RTL → visually left) */}
+          {/* Left: menu */}
           <Pressable onPress={() => setIsPanelOpen(true)} style={styles.iconButton}>
             <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2}>
               <Path d="M3 12h18M3 6h18M3 18h18" />
@@ -457,9 +456,9 @@ export default function ChatScreen() {
           </Pressable>
 
           {/* Center title */}
-          <Text style={styles.headerTitle}>90Plus Captin AI</Text>
+          <Text style={styles.headerTitle}>90Plus Captain AI</Text>
 
-          {/* Left: back arrow */}
+          {/* Right: back arrow */}
           <Pressable onPress={() => router.push('/')} style={styles.iconButton}>
             <Text style={styles.backArrow}>‹</Text>
           </Pressable>
@@ -477,21 +476,21 @@ export default function ChatScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.welcomeHero}>
-            <Text style={styles.welcomeTitle}>أهلاً يا محمود!</Text>
-            <Text style={styles.welcomeSubtitle}>كيف أقدر أساعدك؟</Text>
+            <Text style={styles.welcomeTitle}>Hey Mahmoud!</Text>
+            <Text style={styles.welcomeSubtitle}>How can I help?</Text>
             <Text style={styles.welcomeBrand}>90Plus AI</Text>
           </View>
           <View style={styles.chipGrid}>
             <View style={styles.chipRow}>
-              <ChipButton icon="⚽" text="معلومات كرة القدم" onClick={() => handleSend('معلومات كرة القدم')} />
-              <ChipButton icon="🌙" text="إحصائيات الدوريات" onClick={() => handleSend('إحصائيات الدوريات')} />
+              <ChipButton icon="⚽" text="Football info" onClick={() => handleSend('Football info')} />
+              <ChipButton icon="🌙" text="League stats" onClick={() => handleSend('League stats')} />
             </View>
             <View style={styles.chipRow}>
-              <ChipButton icon="✏️" text="خطة تمرين" onClick={() => handleSend('خطة تمرين')} />
-              <ChipButton icon="📅" text="نظام غذائي" onClick={() => handleSend('نظام غذائي')} />
+              <ChipButton icon="✏️" text="Training plan" onClick={() => handleSend('Training plan')} />
+              <ChipButton icon="📅" text="Nutrition plan" onClick={() => handleSend('Nutrition plan')} />
             </View>
             <View style={styles.chipRow}>
-              <ChipButton icon="🎵" text="نصائح الاستشفاء" onClick={() => handleSend('نصائح الاستشفاء')} />
+              <ChipButton icon="🎵" text="Recovery tips" onClick={() => handleSend('Recovery tips')} />
             </View>
           </View>
         </ScrollView>
@@ -535,7 +534,7 @@ export default function ChatScreen() {
       >
         {messagesRemaining === 0 && resetTime ? (
           <View style={styles.limitBanner}>
-            <Text style={styles.limitText}>انتهت رسائلك اليومية</Text>
+            <Text style={styles.limitText}>Daily message limit reached</Text>
           </View>
         ) : (
           <View style={styles.inputContainer}>
@@ -547,7 +546,7 @@ export default function ChatScreen() {
                     <Path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                     <Path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                   </Svg>
-                  <Text style={styles.editText}>تعديل الرسالة</Text>
+                  <Text style={styles.editText}>Edit message</Text>
                 </View>
                 <Pressable onPress={() => { setEditingMessage(null); setInputValue(''); }}>
                   <Text style={styles.editCancel}>×</Text>
@@ -562,10 +561,10 @@ export default function ChatScreen() {
                 style={styles.textInput}
                 value={inputValue}
                 onChangeText={setInputValue}
-                placeholder={editingMessage ? 'عدّل...' : 'Ask 90Plus AI ...'}
+                placeholder={editingMessage ? 'Edit...' : 'Ask 90Plus AI ...'}
                 placeholderTextColor="rgba(255,255,255,0.3)"
                 multiline
-                textAlign="right"
+                textAlign="left"
                 onSubmitEditing={() => handleSend()}
                 blurOnSubmit={false}
               />
@@ -664,7 +663,7 @@ const styles = StyleSheet.create({
   chipGrid: { width: '100%', alignItems: 'center', gap: 10 },
   chipRow: { flexDirection: 'row', gap: 10 },
   chipButton: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     backgroundColor: 'rgba(255,255,255,0.07)',
@@ -714,13 +713,13 @@ const styles = StyleSheet.create({
     flex: 1,
     color: 'white',
     fontSize: 14,
-    textAlign: 'right',
+    textAlign: 'left',
     paddingVertical: 12,
     paddingHorizontal: 8,
     maxHeight: 120,
   },
   editHeader: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: 'rgba(124,58,237,0.15)',
@@ -729,7 +728,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 8,
     marginBottom: 8,
   },
-  editLabel: { flexDirection: 'row-reverse', alignItems: 'center', gap: 8 },
+  editLabel: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   editText: { fontSize: 11, color: 'rgba(255,255,255,0.7)' },
   editCancel: { fontSize: 20, color: 'rgba(255,255,255,0.5)', marginTop: -2 },
   footerInfo: { alignItems: 'center', marginTop: 8 },
@@ -740,7 +739,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   limitBanner: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.08)',
@@ -757,7 +756,7 @@ const styles = StyleSheet.create({
   panelBackdrop: { backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 99 },
   panelContent: { flex: 1, padding: 24 },
   panelHeader: {
-    flexDirection: 'row-reverse', justifyContent: 'space-between',
+    flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', marginBottom: 24,
   },
   panelTitle: { fontSize: 20, fontWeight: '700', color: 'white' },
@@ -773,7 +772,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 16, padding: 16, marginBottom: 24,
   },
-  profileLeft: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
+  profileLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatar: {
     width: 48, height: 48, borderRadius: 24,
     alignItems: 'center', justifyContent: 'center',
@@ -786,17 +785,17 @@ const styles = StyleSheet.create({
     borderWidth: 2, borderColor: '#0D0A14',
   },
   profileName: { color: 'white', fontWeight: '600', fontSize: 16 },
-  onlineRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: 6, marginTop: 2 },
+  onlineRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
   onlineText: { fontSize: 12, fontWeight: '500', color: '#34D399' },
   conversationsList: { flex: 1 },
   sectionHeader: {
-    flexDirection: 'row-reverse', alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center',
     gap: 8, marginBottom: 12, marginTop: 16,
   },
   sectionLabel: { fontSize: 11, color: 'rgba(255,255,255,0.4)' },
   conversationsGroup: { gap: 10 },
   historyItem: {
-    flexDirection: 'row-reverse', alignItems: 'center', gap: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 10,
     padding: 14, borderRadius: 16,
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.08)',
@@ -813,13 +812,13 @@ const styles = StyleSheet.create({
   },
   historyItemContent: { flex: 1 },
   historyItemTitleRow: {
-    flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'space-between',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
   historyItemTitle: {
-    color: 'white', fontWeight: '500', fontSize: 14, textAlign: 'right',
+    color: 'white', fontWeight: '500', fontSize: 14, textAlign: 'left',
   },
   historyItemDate: {
-    color: 'rgba(255,255,255,0.3)', fontSize: 10, textAlign: 'right', marginTop: 2,
+    color: 'rgba(255,255,255,0.3)', fontSize: 10, textAlign: 'left', marginTop: 2,
   },
   newChatButton: { marginTop: 24, borderRadius: 16, overflow: 'hidden' },
   newChatGradient: { paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
@@ -843,8 +842,8 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(124,58,237,0.3)',
   },
   renameContent: { padding: 24, gap: 16 },
-  renameTitle: { fontSize: 20, fontWeight: '700', color: 'white', textAlign: 'right' },
-  renameSubtitle: { fontSize: 14, color: 'rgba(255,255,255,0.5)', textAlign: 'right' },
+  renameTitle: { fontSize: 20, fontWeight: '700', color: 'white', textAlign: 'left' },
+  renameSubtitle: { fontSize: 14, color: 'rgba(255,255,255,0.5)', textAlign: 'left' },
   renameInput: {
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
