@@ -6,47 +6,44 @@
  * Mirrors web MessageBubble.tsx behavior exactly.
  */
 
+import { Text } from '@/src/components/common/AppText';
+import { Message } from '@/src/hooks/useAIChatNative';
+import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
 } from 'react';
 import {
-  View,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Platform,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
 } from 'react-native';
-import { Text } from '@/src/components/common/AppText';
 import Animated, {
-  FadeIn,
-  useSharedValue,
-  withSpring,
-  withRepeat,
-  withTiming,
-  withDelay,
-  useAnimatedStyle,
-  Easing,
+    Easing,
+    FadeIn,
+    useAnimatedStyle,
+    useSharedValue,
+    withDelay,
+    withRepeat,
+    withSpring,
+    withTiming,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
-import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 import {
-  Colors,
-  Radius,
-  FontSize,
-  LineHeight,
-  Spacing,
-  Gradients,
-  BlurIntensity,
-  Layout,
-  Fonts,
+    Colors,
+    FontSize,
+    Fonts,
+    LineHeight,
+    Radius,
+    Spacing
 } from '../../../constants/theme';
 import { MessageContextMenu } from '../chat/MessageContextMenu';
-import { Message } from '@/src/hooks/useAIChatNative';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

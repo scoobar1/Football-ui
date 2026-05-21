@@ -1,14 +1,14 @@
+import { Fonts } from '@/constants/theme';
 import React from 'react';
 import {
-  StyleProp,
-  StyleSheet,
-  Text as RNText,
-  TextInput as RNTextInput,
-  TextStyle,
-  type TextInputProps as RNTextInputProps,
-  type TextProps as RNTextProps,
+    Text as RNText,
+    TextInput as RNTextInput,
+    StyleProp,
+    StyleSheet,
+    TextStyle,
+    type TextInputProps as RNTextInputProps,
+    type TextProps as RNTextProps,
 } from 'react-native';
-import { Fonts } from '@/constants/theme';
 
 type WeightKey = '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
 

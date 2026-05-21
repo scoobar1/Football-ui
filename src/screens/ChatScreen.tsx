@@ -3,24 +3,24 @@
  * Matches screenshots exactly. Keyboard-aware input stays above keyboard.
  */
 
+import { Text, TextInput, type TextInputRef } from '@/src/components/common/AppText';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Alert,
-  Clipboard,
-  Keyboard,
-  KeyboardEvent,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-  View,
+    Alert,
+    Clipboard,
+    Keyboard,
+    KeyboardEvent,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    useWindowDimensions,
+    View,
 } from 'react-native';
-import { Text, TextInput, type TextInputRef } from '@/src/components/common/AppText';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
