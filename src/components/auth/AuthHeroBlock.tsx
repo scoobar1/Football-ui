@@ -1,5 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  StyleSheet,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { BlurView } from 'expo-blur';
 import { RadioTower, FileText, BarChart2 } from 'lucide-react-native';
 import { AUTH_ACCENT } from './AuthTokens';

@@ -5,7 +5,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import {
+  StyleSheet,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { Colors, FontSize } from '../../../constants/theme';
 
 interface LimitReachedCountdownProps {

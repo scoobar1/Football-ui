@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   ImageBackground,
   StyleSheet,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 
 interface WorldCupCardProps {
   targetDate?: Date;

@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   Image,
   StyleSheet,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { Colors, FontSize, FontWeight, Spacing, Radius, Shadows } from '../../../constants/theme';
 
 export type CompetitionType = 'predictions' | 'share' | 'quiz' | 'custom';

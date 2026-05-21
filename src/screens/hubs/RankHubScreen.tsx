@@ -5,23 +5,21 @@ import {
   ChevronDown,
   ChevronRight,
   Trophy,
-  Zap,
-  Shield,
-  Star
+  Zap
 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import FifaCard from '../../components/rank/FifaCard';
 import {
   Image,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Colors } from '../../../constants/theme';
 import BottomNav from '../../components/BottomNav';
-import { Colors, FontSize, FontWeight, Spacing, Radius } from '../../../constants/theme';
+import FifaCard from '../../components/rank/FifaCard';
 
 // ─── Derived constants from theme ─────────────────────────────────────────────
 const BG = Colors.bgBase;

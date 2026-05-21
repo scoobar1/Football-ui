@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Modal,
   Animated,
   Dimensions,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Brain, ArrowRight, X, Zap } from 'lucide-react-native';
 import { useRouter } from 'expo-router';

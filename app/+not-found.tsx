@@ -1,6 +1,11 @@
 import { Link, Stack } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Pressable,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import {
   GRADIENT_BG_COLORS,
   GRADIENT_BG_LOCATIONS,

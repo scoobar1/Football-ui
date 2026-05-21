@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import Animated, {
   FadeInDown, useSharedValue, withRepeat, withTiming, useAnimatedStyle,
   Easing, withSpring,

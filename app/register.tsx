@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   Pressable,
   TouchableOpacity,
   StyleSheet,
   Alert,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { CircleUserRound, Mail, Lock, Apple } from 'lucide-react-native';

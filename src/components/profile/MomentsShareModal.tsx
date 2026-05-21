@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Modal,
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Share,
@@ -11,6 +10,7 @@ import {
   ScrollView,
   useWindowDimensions,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { X, Share2 } from 'lucide-react-native';

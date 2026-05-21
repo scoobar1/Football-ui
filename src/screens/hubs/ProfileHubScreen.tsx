@@ -1,10 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Image, 
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
   Share,
   Dimensions,
   StatusBar,
@@ -12,6 +11,7 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

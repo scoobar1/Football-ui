@@ -1,5 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import {
+  View,
+  StyleSheet,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { useRouter } from 'expo-router';
 import { Trophy } from 'lucide-react-native';
 import { SectionHeader } from './SectionHeader';

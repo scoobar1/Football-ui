@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ImageBackground,
   Pressable,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Play } from 'lucide-react-native';
 import { GOLD_PRIMARY, GOLD_DARK, TEXT_PRIMARY, TEXT_MUTED } from '../../../constants/tokens';

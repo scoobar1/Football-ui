@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   View,
-  Text,
   Image,
   StyleSheet,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 
 interface RankProfileCardProps {
   username?: string;

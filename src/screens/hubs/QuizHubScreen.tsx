@@ -1,5 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronLeft, Circle, CircleCheck, Lightbulb, Bookmark, ArrowRight, Clock3, Zap } from 'lucide-react-native';
 import { useRouter } from 'expo-router';

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
@@ -10,6 +9,7 @@ import {
   type ImageErrorEventData,
   type NativeSyntheticEvent,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import Animated, {
   useSharedValue, withRepeat, withTiming, useAnimatedStyle, Easing,
 } from 'react-native-reanimated';

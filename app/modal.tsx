@@ -6,8 +6,8 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import {
   OVERLAY_SCRIM,
   SURFACE_MODAL,

@@ -15,12 +15,12 @@ import React, {
 } from 'react';
 import {
   View,
-  Text,
   Pressable,
   ScrollView,
   StyleSheet,
   Platform,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import Animated, {
   FadeIn,
   useSharedValue,
@@ -43,6 +43,7 @@ import {
   Gradients,
   BlurIntensity,
   Layout,
+  Fonts,
 } from '../../../constants/theme';
 import { MessageContextMenu } from '../chat/MessageContextMenu';
 import { Message } from '@/src/hooks/useAIChatNative';
@@ -761,7 +762,7 @@ const styles = StyleSheet.create({
     borderLeftColor: Colors.purpleSoft,
   },
   codeText: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontFamily: Fonts.mono,
     fontSize: FontSize.sm,
     color: '#a78bfa',
     lineHeight: 20,

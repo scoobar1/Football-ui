@@ -325,26 +325,22 @@ export const LetterSpacing = {
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
-export const Fonts = Platform.select({
-  ios: {
-    sans: 'System',
-    serif: 'Georgia',
-    rounded: 'System',
-    mono: 'Menlo',
+export const Fonts = {
+  sans: {
+    light: 'Outfit_300Light',
+    regular: 'Outfit_400Regular',
+    medium: 'Outfit_500Medium',
+    semibold: 'Outfit_600SemiBold',
+    bold: 'Outfit_700Bold',
+    extrabold: 'Outfit_800ExtraBold',
+    black: 'Outfit_900Black',
   },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace",
-  },
-});
+  mono: Platform.select({
+    ios: 'Menlo',
+    default: 'monospace',
+    web: "SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace",
+  }) as string,
+} as const;
 
 // ─── Shadows ──────────────────────────────────────────────────────────────────
 

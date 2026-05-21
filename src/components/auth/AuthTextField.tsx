@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
   View,
-  TextInput,
   Pressable,
   StyleSheet,
   TextInputProps,
   ViewStyle,
   Platform,
 } from 'react-native';
+import { TextInput } from '@/src/components/common/AppText';
 import { BlurView } from 'expo-blur';
 import type { LucideIcon } from 'lucide-react-native';
 import { Eye, EyeOff } from 'lucide-react-native';

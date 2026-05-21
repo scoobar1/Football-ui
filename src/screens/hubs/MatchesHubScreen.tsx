@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
   Dimensions,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,

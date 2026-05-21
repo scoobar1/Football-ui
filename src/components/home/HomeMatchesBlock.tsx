@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { Star, Bell } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { SectionHeader } from './SectionHeader';

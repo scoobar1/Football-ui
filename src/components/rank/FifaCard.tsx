@@ -1,5 +1,12 @@
 import React, { useEffect, memo } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Animated, Easing } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Easing,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Defs, LinearGradient as SvgLinearGradient, Stop, Path, ClipPath, Image as SvgImage } from 'react-native-svg';

@@ -1,5 +1,13 @@
 import React, { useState, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, useWindowDimensions, RefreshControl, TouchableOpacity, Text } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

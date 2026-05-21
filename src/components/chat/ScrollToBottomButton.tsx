@@ -5,7 +5,12 @@
  */
 
 import React, { useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import {
+  View,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import Animated, {
   FadeIn,
   FadeOut,

@@ -7,12 +7,12 @@
 import React from 'react';
 import {
   View,
-  Text,
   Pressable,
   Modal,
   StyleSheet,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import Animated, {
   FadeIn,
   FadeOut,

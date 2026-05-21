@@ -1,13 +1,13 @@
 import { ChevronDown } from "lucide-react-native";
 import React from "react";
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import CompetitionCard from "./CompetitionCard";

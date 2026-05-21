@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   StatusBar,
 } from 'react-native';
+import { Text } from '@/src/components/common/AppText';
 import { Colors, FontSize, FontWeight, Spacing, Radius } from '../../../constants/theme';
 
 interface RankHeaderProps {
