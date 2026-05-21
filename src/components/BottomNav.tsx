@@ -8,7 +8,7 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { prefetchRoute, prefetchRoutes } from '../../utils/routePrefetcher';
-import { TAB_COLORS } from '../../constants/tokens';
+import { TAB_COLORS, Colors } from '../../constants/theme';
 import { isLiquidGlassSupported, LiquidGlassView } from '@callstack/liquid-glass';
 
 const { width } = Dimensions.get('window');
@@ -31,7 +31,7 @@ const AIIcon = ({ color, size }: { color: string; size: number }) => (
   <Sparkles color={color} size={size} strokeWidth={2} />
 );
 
-const ICON_COLOR = 'rgba(255,255,255,0.55)';
+const ICON_COLOR = Colors.white55;
 
 // ─── Nav Item ─────────────────────────────────────────────────────────────────
 interface NavItemProps {

@@ -5,15 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import BottomNav from '../BottomNav';
-import {
-  BG_BASE,
-  TEXT_PRIMARY,
-  TEXT_MUTED,
-  SCREEN_PADDING_H,
-  SECTION_GAP,
-  GRADIENT_BG_COLORS,
-  GRADIENT_BG_LOCATIONS,
-} from '../../../constants/tokens';
+import { Colors, Gradients, Spacing, FontSize, FontWeight, Layout } from '../../../constants/theme';
 
 type Props = {
   title: string;
@@ -32,18 +24,18 @@ export function MainShell({ title, subtitle, children, onBackPress }: Props) {
     <View style={styles.root}>
       <StatusBar style="light" />
       <LinearGradient
-        colors={[...GRADIENT_BG_COLORS]}
+        colors={[...Gradients.background]}
         style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        locations={[...GRADIENT_BG_LOCATIONS]}
+        locations={[...Gradients.backgroundLocations]}
       />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={{
           paddingTop: topPad,
-          paddingHorizontal: SCREEN_PADDING_H,
-          paddingBottom: bottomPad + SECTION_GAP,
+          paddingHorizontal: Layout.screenPaddingH,
+          paddingBottom: bottomPad + Layout.sectionGap,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -57,7 +49,7 @@ export function MainShell({ title, subtitle, children, onBackPress }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Go back"
             >
-              <ChevronLeft color={TEXT_MUTED} size={22} strokeWidth={2.2} />
+              <ChevronLeft color={Colors.textMuted} size={22} strokeWidth={2.2} />
               <Text style={styles.backTxt}>Back</Text>
             </TouchableOpacity>
           ) : null}
@@ -72,39 +64,39 @@ export function MainShell({ title, subtitle, children, onBackPress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: BG_BASE },
+  root: { flex: 1, backgroundColor: Colors.bgBase },
   scroll: { flex: 1 },
   head: {
-    marginBottom: SECTION_GAP - 4,
+    marginBottom: Layout.sectionGap - 4,
     alignItems: 'flex-start',
   },
   backRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 2,
-    marginBottom: 12,
+    marginBottom: Spacing.md,
     marginLeft: -4,
-    paddingVertical: 4,
-    paddingRight: 12,
+    paddingVertical: Spacing.xs,
+    paddingRight: Spacing.md,
   },
   backTxt: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: TEXT_MUTED,
+    fontSize: FontSize.xl,
+    fontWeight: FontWeight.semibold,
+    color: Colors.textMuted,
   },
   title: {
     fontSize: 22,
-    fontWeight: '800',
-    color: TEXT_PRIMARY,
+    fontWeight: FontWeight.extrabold,
+    color: Colors.textPrimary,
     letterSpacing: -0.45,
     textAlign: 'left',
     lineHeight: 28,
     maxWidth: '100%',
   },
   subtitle: {
-    marginTop: 8,
-    fontSize: 13,
-    color: TEXT_MUTED,
+    marginTop: Spacing.sm,
+    fontSize: FontSize.md,
+    color: Colors.textMuted,
     lineHeight: 18,
     textAlign: 'left',
     maxWidth: '100%',

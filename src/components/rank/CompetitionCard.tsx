@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
+import { Colors, FontSize, FontWeight, Spacing, Radius, Shadows } from '../../../constants/theme';
 
 export type CompetitionType = 'predictions' | 'share' | 'quiz' | 'custom';
 
@@ -58,28 +59,24 @@ export const CompetitionCard: React.FC<CompetitionCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    backgroundColor: '#0f0020',
-    borderRadius: 16,
-    padding: 14,
+    backgroundColor: Colors.surfaceCard,
+    borderRadius: Radius.card,
+    padding: Spacing.md,
     borderWidth: 1,
-    borderColor: '#2a0050',
+    borderColor: Colors.borderArena,
     alignItems: 'flex-start',
     gap: 6,
     minWidth: 110,
-    shadowColor: '#7c00ff',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 4,
+    ...Shadows.card,
   },
   iconContainer: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#1a0035',
+    backgroundColor: Colors.surfaceGlass,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   iconImage: {
     width: 48,
@@ -87,18 +84,18 @@ const styles = StyleSheet.create({
     borderRadius: 24,
   },
   iconEmoji: {
-    fontSize: 28,
+    fontSize: FontSize['6xl'],
   },
   title: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '800',
+    color: Colors.textPrimary,
+    fontSize: FontSize.lg,
+    fontWeight: FontWeight.extrabold,
     lineHeight: 18,
   },
   description: {
-    color: '#7a5a9a',
-    fontSize: 11,
-    fontWeight: '500',
+    color: Colors.textMuted,
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.medium,
     lineHeight: 15,
   },
   liveRow: {
@@ -111,12 +108,12 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: '#7c00ff',
+    backgroundColor: Colors.purplePrimary,
   },
   liveText: {
-    color: '#bf7fff',
-    fontSize: 11,
-    fontWeight: '700',
+    color: Colors.purpleSoft,
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.bold,
   },
 });
 

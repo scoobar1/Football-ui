@@ -18,7 +18,7 @@ import { PlayerList } from '../components/home/PlayerList';
 import { TeamPitch } from '../components/home/TeamPitch';
 import BottomNav from '../components/BottomNav';
 import { ScreenSection } from '../components/layout/ScreenSection';
-import { BG_BASE, BG_MID, BG_SURFACE } from '../../constants/tokens';
+import { Colors, Gradients } from '../../constants/theme';
 
 // ─── Animated Ambient Glow Orbs ───────────────────────────────────────────────
 function AmbientGlow() {
@@ -111,11 +111,11 @@ export default function HomeScreen() {
 
       {/* Base background gradient */}
       <LinearGradient
-        colors={[BG_BASE, BG_MID, BG_SURFACE, BG_BASE]}
+        colors={[...Gradients.background]}
         style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        locations={[0, 0.3, 0.7, 1]}
+        locations={[...Gradients.backgroundLocations]}
       />
 
       {/* Animated ambient glow orbs */}
@@ -134,9 +134,9 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#7C3AED"
-            colors={['#7C3AED']}
-            progressBackgroundColor="#0d0a14"
+            tintColor={Colors.purplePrimary}
+            colors={[Colors.purplePrimary]}
+            progressBackgroundColor={Colors.surfaceDark}
           />
         }
       >
@@ -170,7 +170,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BG_BASE,
+    backgroundColor: Colors.bgBase,
   },
   scroll: {
     flex: 1,

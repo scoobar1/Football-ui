@@ -21,15 +21,14 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomNav from '../../components/BottomNav';
+import { Colors, FontSize, FontWeight, Spacing, Radius } from '../../../constants/theme';
 
-// ─── Colors ───────────────────────────────────────────────────────────────────
-const BG = '#05010D';
-const CARD_BG1 = '#17112F';
-const CARD_BG2 = '#0A0818';
-const ACCENT = '#A855F7';
-const GOLD = '#FFD700';
-const SILVER = '#C0C0C0';
-const BRONZE = '#CD7F32';
+// ─── Derived constants from theme ─────────────────────────────────────────────
+const BG = Colors.bgBase;
+const ACCENT = Colors.purpleAccent;
+const GOLD = Colors.ratingGold;
+const SILVER = Colors.silver;
+const BRONZE = Colors.bronze;
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const COMPETITIONS = [
@@ -85,7 +84,7 @@ function Header({ topInset }: { topInset: number }) {
       {/* Right: coins */}
       <View style={s.coinChip}>
         <Zap size={13} color={ACCENT} fill={ACCENT} />
-        <Text style={s.coinTxt}>50</Text>
+        <Text style={s.coinTxt}>50</Text>
       </View>
     </GlassContainer>
   );
@@ -119,7 +118,7 @@ function ProfileCard() {
         <View style={s.profileInfo}>
           {/* Name + verified */}
           <View style={s.nameRow}>
-            <Text style={s.username}>mr.dev</Text>
+            <Text style={s.username}>mr.dev</Text>
             <View style={s.verifiedBadge}>
               <Text style={s.verifiedTxt}>✓</Text>
             </View>
@@ -717,7 +716,7 @@ const s = StyleSheet.create({
   compImg: { width: 115, height: 815 },
   iconGlowAmbient: {
     position: 'absolute',
-    top:-160,
+    top: -160,
     width: 70,
     height: 70,
     backgroundColor: ACCENT,

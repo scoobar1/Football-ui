@@ -1,7 +1,11 @@
-import { PURPLE_PRIMARY } from '../../../constants/tokens';
+/**
+ * Auth-specific tokens — derived from the unified design system.
+ * @deprecated Prefer importing directly from '@/constants/theme' (Colors.authPanelBg, etc.)
+ */
 
-/** Form panel background — near reference #0B0B15 */
-export const AUTH_PANEL_BG = '#0b0b15';
-export const AUTH_SURFACE_INPUT = 'rgba(255,255,255,0.06)';
-export const AUTH_BORDER = 'rgba(255,255,255,0.12)';
-export const AUTH_ACCENT = PURPLE_PRIMARY;
+import { Colors } from '../../../constants/theme';
+
+export const AUTH_PANEL_BG = Colors.authPanelBg;
+export const AUTH_SURFACE_INPUT = Colors.authSurfaceInput;
+export const AUTH_BORDER = Colors.authBorder;
+export const AUTH_ACCENT = Colors.purplePrimary;
